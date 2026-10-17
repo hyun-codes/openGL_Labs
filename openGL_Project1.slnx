@@ -1,0 +1,25 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="openGL_Project1.vcxproj" Id="6107a9a0-3bd9-4f8d-8225-c9b9dc30f3b5" />
+  <Project Path="Practice2/Practice2.vcxproj" Id="a6bfa912-d74e-4b2e-8907-45ca77e602a2" />
+  <Project Path="Practice3/Practice3.vcxproj" Id="b4e30231-0a8f-46fb-94c3-5f412580dda9" />
+  <Project Path="Practice4/Practice4.vcxproj" Id="d1e4a78b-74a8-4c95-a8a2-4c386e63c120" />
+  <Project Path="Practice5/Practice5.vcxproj" Id="e287f1a0-6b31-4aa8-9d19-920e5895c0f5" />
+  <Project Path="Practice6/Practice6.vcxproj" Id="f39c264e-5d72-4f0d-b8a4-0ab764922ed6" />
+  <Project Path="Practice7/Practice7.vcxproj" Id="72b0e47c-8a25-4f7a-b9c1-7c6c7ed72a07" />
+  <Project Path="Practice8/Practice8.vcxproj" Id="83c1f58d-9b36-408b-cad2-8d7d8fe83b18" />
+  <Project Path="Practice9/Practice9.vcxproj" Id="94d2069e-ac47-419c-dbe3-9e8e90f94c29" />
+  <Project Path="Practice10/Practice10.vcxproj" Id="a5e3100e-bc47-48c2-993c-13a115fabc55" />
+  <Project Path="Practice11/Practice11.vcxproj" Id="b6110001-c6a1-4c11-9111-000000000011" />
+  <Project Path="Practice12/Practice12.vcxproj" Id="c6120001-c6a1-4c12-9122-000000000012" />
+  <Project Path="Practice13/Practice13.vcxproj" Id="d7130001-c6a1-4c13-9133-000000000013" />
+  <Project Path="Practice14/Practice14.vcxproj" Id="e8140001-c6a1-4c14-9144-000000000014" />
+  <Project Path="Practice15/Practice15.vcxproj" Id="f9150001-c6a1-4c15-9155-000000000015" />
+  <Project Path="Practice16/Practice16.vcxproj" Id="fa160001-c6a1-4c16-9166-000000000016" />
+  <Project Path="Practice17/Practice17.vcxproj" Id="fa170001-c6a1-4c17-9167-000000000017" />
+  <Project Path="Practice18/Practice18.vcxproj" Id="fa180001-c6a1-4c18-9168-000000000018" />
+  <Project Path="Practice19/Practice19.vcxproj" Id="fa190001-c6a1-4c19-9169-000000000019" />
+  <Project Path="Practice0/Practice0.vcxproj" Id="05a0b1c2-d3e4-4f50-9a60-0b1c2d3e4f50" />
+</Solution>

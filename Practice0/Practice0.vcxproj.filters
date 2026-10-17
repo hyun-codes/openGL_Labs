@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup><Filter Include="소스 파일"><UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier></Filter><Filter Include="셰이더 파일"><UniqueIdentifier>{B2A1A712-18F3-4E8F-A47D-A3CC36E2B431}</UniqueIdentifier></Filter></ItemGroup>
+  <ItemGroup><ClCompile Include="main.cpp"><Filter>소스 파일</Filter></ClCompile></ItemGroup>
+  <ItemGroup><None Include="README.md" /><None Include="shaders\vertex.glsl"><Filter>셰이더 파일</Filter></None><None Include="shaders\fragment.glsl"><Filter>셰이더 파일</Filter></None></ItemGroup>
+</Project>
