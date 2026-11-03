@@ -2,6 +2,8 @@
 
 C++와 OpenGL을 공부하며 작성한 실습 코드다. 실습별 코드와 프로젝트는 Practice 폴더에 있다.
 
+**[Ollama 오프라인 실습 가이드 — Notion 가져오기용](Ollama_Offline_Study_Notion.md)**: 설치·모델 다운로드부터 내 C++·셰이더 파일 읽히기까지 정리했다. [질문용 PowerShell 스크립트](Ask-OpenGL.ps1)도 최상위에 있다.
+
 ## Visual Studio만 있는 학교 PC에서 시작하기
 
 **[처음부터 따라 하는 상세 README](InitOpenGL/README.md)**
