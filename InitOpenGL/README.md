@@ -4,50 +4,8 @@
 
 목표: `C:\Opengl_codingTest` 폴더 하나를 만들고, 준비된 파일을 넣은 다음 Visual Studio의 **Ctrl+F5 / F5 / ▶**로 빌드하고 실행한다.
 
-처음부터 준비하는 경우 **1번부터 순서대로** 따라간다.
-이미 압축을 풀고 main.cpp까지 열었는데 **구성 없음**이 보이는 경우 바로 아래에서 이어간다.
-
-## 지금 하던 상태에서 이어가기
-
-현재 폴더가 다음과 같고 Visual Studio에서 main.cpp를 보고 있는 상황이다.
-
-```text
-C:\Opengl_codingTest\InitOpenGL\
-├─ main.cpp
-├─ build.bat
-├─ run.bat
-├─ externals\
-└─ ...
-```
-
-위쪽에 **구성 없음 / 시작 항목 선택**이 보이는 이유는 프로젝트가 아니라 폴더 또는 파일만 열었기 때문이다.
-처음 배포한 ZIP에는 Visual Studio 프로젝트가 빠져 있었다. 이 경우 아래 두 파일만 추가하면 된다.
-**기존 main.cpp와 externals는 그대로 사용한다. 다시 만들 필요 없다.**
-
-1. main.cpp를 수정했다면 **Ctrl+S**로 먼저 저장한다.
-2. **[Visual Studio 프로젝트 파일만 다운로드](https://github.com/hyun-codes/openGL_Labs/raw/refs/heads/master/downloads/VisualStudio-project-files.zip)**를 누른다.
-3. 받은 ZIP을 마우스 오른쪽으로 클릭하고 **모두 압축 풀기**를 선택한다.
-4. 압축을 푼 곳의 **InitOpenGL.sln**, **InitOpenGL.vcxproj** 두 파일을 복사한다.
-5. 두 파일을 **main.cpp가 있는 바로 그 폴더**, 즉 `C:\Opengl_codingTest\InitOpenGL`에 붙여넣는다.
-6. 아래처럼 파일이 함께 있는지 확인한다.
-
-```text
-C:\Opengl_codingTest\InitOpenGL\
-├─ InitOpenGL.sln        ← 이번에 추가
-├─ InitOpenGL.vcxproj    ← 이번에 추가
-├─ main.cpp             ← 기존 파일 유지
-├─ build.bat
-├─ run.bat
-└─ externals\           ← 기존 폴더 유지
-```
-
-7. **현재 Visual Studio에서 파일 → 열기 → 프로젝트/솔루션**을 선택한다.
-8. `C:\Opengl_codingTest\InitOpenGL\InitOpenGL.sln`을 선택하고 **열기**를 누른다.
-9. 위쪽이 **Debug / x64 / 로컬 Windows 디버거**로 바뀌는지 확인한다.
-10. **Ctrl+F5**를 누른다. 빌드할지 묻는 창이 나오면 **예**를 누른다.
-
-푸른 배경 창이 뜨면 완료다. ESC 또는 창의 X로 종료한다.
-자세한 화면 확인은 아래 **5번과 6번**을 보면 된다.
+아래 **1번부터 순서대로** 따라간다. 준비 확인 → 다운로드 → 폴더 생성·압축 해제 → 솔루션 열기 → 실행 → 코드 수정 순서다.
+처음 진행할 때는 전체 시작 ZIP 하나만 사용하면 된다.
 
 ## 1. Visual Studio의 C++ 개발 도구 확인
 
@@ -253,3 +211,14 @@ externals는 로컬에 받아 둔 [snooy-dev/opengl-labs](https://github.com/sno
 GLFW·GLEW·GLM의 기존 라이선스 파일을 포함하며, 원본 배포 바이너리를 재포장한 것이다.
 config/opengl.props의 설정은 이 프로젝트 파일에 필요한 내용으로 들어 있으므로 따로 추가하지 않아도 된다.
 ZIP의 .vscode, build.bat, run.bat은 다른 편집기·명령창을 위한 추가 파일이다. 위 Visual Studio 절차에는 필요 없다.
+
+## 부록: 예전 ZIP을 이미 받은 경우
+
+이 부분은 처음 설치하는 절차가 아니다. 처음 시작한다면 위 1번부터 7번까지만 따라가면 된다.
+예전 ZIP을 받아 main.cpp와 externals는 있지만 InitOpenGL.sln과 InitOpenGL.vcxproj가 없는 경우에만 아래 방법을 사용한다.
+
+1. 수정한 main.cpp를 Ctrl+S로 저장한다.
+2. [프로젝트 파일 전용 ZIP](https://github.com/hyun-codes/openGL_Labs/raw/refs/heads/master/downloads/VisualStudio-project-files.zip)을 받고 압축을 푼다.
+3. 안의 InitOpenGL.sln과 InitOpenGL.vcxproj 두 파일을 기존 main.cpp가 있는 폴더에 복사한다. main.cpp와 externals는 유지한다.
+4. Visual Studio에서 파일 → 열기 → 프로젝트/솔루션으로 방금 넣은 InitOpenGL.sln을 연다.
+5. 위 5번과 6번의 화면 확인·실행 절차를 따른다.
