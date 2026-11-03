@@ -63,6 +63,8 @@ C:\
       ├─ InitOpenGL.vcxproj         ← 라이브러리·컴파일·실행 설정
       ├─ main.cpp                   ← 내가 수정하는 C++ 코드
       ├─ PracticeStarterGL.h        ← 기존 실습의 공통 셰이더·VAO·VBO 함수
+      ├─ CubeVertices.h             ← 15·16번의 정육면체 정점 36개
+      ├─ CUBE_USAGE.md              ← 정점 사용·버퍼 초기화·그리기 예제
       ├─ shaders\                   ← 이미 포함되어 있음
       │  ├─ vertex.glsl             ← model/view/projection 변환
       │  └─ fragment.glsl           ← 정점 색상 × objectColor
@@ -165,6 +167,9 @@ glm::vec4 backgroundColor(1.0f, 1.0f, 1.0f, 1.0f);
 배경이 흰색으로 바뀌면 수정 → 빌드 → 실행 과정까지 확인된 것이다.
 
 ## 8. 실습 코드를 어디에 추가할지
+
+정육면체가 필요하면 **[CubeVertices.h 사용 예제](CUBE_USAGE.md)**를 참고한다.
+헤더를 include하고 정점을 VBO에 올리면 로봇·시소 등의 부품으로 재사용할 수 있다.
 
 ### 기존 19번 코드를 그대로 옮겨 실행할 때
 
@@ -273,7 +278,7 @@ ZIP의 .vscode, build.bat, run.bat은 다른 편집기·명령창을 위한 추�
 
 1. 수정한 main.cpp를 Ctrl+S로 저장한다.
 2. [프로젝트 파일 전용 ZIP](https://github.com/hyun-codes/openGL_Labs/raw/refs/heads/master/downloads/VisualStudio-project-files.zip)을 받고 압축을 푼다.
-3. 안의 InitOpenGL.sln, InitOpenGL.vcxproj, PracticeStarterGL.h, shaders 폴더를 기존 main.cpp가 있는 폴더에 복사한다. main.cpp와 externals는 유지한다.
+3. 안의 InitOpenGL.sln, InitOpenGL.vcxproj, PracticeStarterGL.h, CubeVertices.h, shaders 폴더를 기존 main.cpp가 있는 폴더에 복사한다. main.cpp와 externals는 유지한다.
 4. Visual Studio에서 파일 → 열기 → 프로젝트/솔루션으로 방금 넣은 InitOpenGL.sln을 연다.
 5. 위 5번과 6번의 화면 확인·실행 절차를 따른다.
 

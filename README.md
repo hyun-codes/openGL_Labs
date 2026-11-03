@@ -22,6 +22,7 @@ VS Code를 설치할 필요는 없다.
 라이브러리 연결과 DLL 복사는 프로젝트가 자동 처리하므로 별도로 설정하지 않아도 된다.
 초기 코드에는 shaders 폴더와 model/view/projection 셰이더, 셰이더 읽기·컴파일·연결, Camera 구조체와 행렬 전달이 포함되어 있다. 정점·VAO·VBO와 도형 그리기만 추가하면 된다.
 기존 실습용 PracticeStarterGL.h도 main.cpp 옆에 포함되어 있다. 19번 코드를 복사할 때는 첫 줄을 `#include "PracticeStarterGL.h"`로 바꾸면 된다. [19번 코드로 교체하는 절차](InitOpenGL/README.md#기존-19번-코드를-그대로-옮겨-실행할-때)를 참고한다.
+정육면체 정점은 [CubeVertices.h](InitOpenGL/CubeVertices.h)에 있다. [VAO·VBO 사용 예제](InitOpenGL/CUBE_USAGE.md)를 보고 로봇·시소 등의 부품으로 재사용할 수 있다. 전체 ZIP에도 포함되어 있다.
 
 ## 다운로드
 
