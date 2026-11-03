@@ -92,13 +92,14 @@ OpenGL에서 VAO와 VBO의 차이를 한국어로 짧게 설명해줘.
 
 1. 기존 실습 폴더 `C:\Opengl_codingTest\InitOpenGL`을 연다.
 2. 다운로드한 스크립트를 **main.cpp 옆에** 넣는다. 별도 폴더를 만들 필요 없다.
-3. 파일 이름이 **Ask-OpenGL.ps1**인지 확인한다. `.ps1.txt`가 붙으면 안 된다.
+3. 브라우저에서 저장한 파일이 사진처럼 **Ask-OpenGL.txt**여도 된다. 아래 8번에서 실행용 이름 **Ask-OpenGL.ps1**로 바꾼다.
 
 스크립트 파일은 긴 PowerShell 함수를 매번 붙여넣지 않기 위한 편의 기능이다.
 앞서 PowerShell에 Ask-OpenGL 함수를 직접 입력한 방식도 동작하며, 그 방식에는 별도 스크립트 파일도 필요 없다.
 이 문서에서는 다시 사용하기 쉽게 스크립트를 기존 실습 폴더에 두는 방법으로 설명한다. Visual Studio 프로젝트에 소스로 추가할 필요는 없다.
 
 브라우저에서 다운로드 대신 코드가 보이면 Ctrl+S로 저장한다. 파일 형식은 **모든 파일**, 이름은 **Ask-OpenGL.ps1**로 지정한다.
+이미 Ask-OpenGL.txt로 저장했다면 다시 다운로드할 필요 없다. 내용이 같은 스크립트이므로 확장자만 바꾸면 된다.
 
 학교용 OpenGL 초기 환경은 별도로 [InitOpenGL README](https://github.com/hyun-codes/openGL_Labs/blob/master/InitOpenGL/README.md)의 처음 단계부터 준비한다.
 이미 Visual Studio에서 Ctrl+F5로 실습이 실행된다면 다시 만들 필요 없다.
@@ -112,7 +113,7 @@ C:\
       ├─ InitOpenGL.sln
       ├─ InitOpenGL.vcxproj
       ├─ main.cpp
-      ├─ Ask-OpenGL.ps1       ← main.cpp 옆에 추가. 새 폴더는 필요 없음
+      ├─ Ask-OpenGL.txt       ← 브라우저에서 저장된 이름. 8번에서 .ps1로 변경
       ├─ PracticeStarterGL.h
       ├─ CubeVertices.h
       ├─ shaders\
@@ -154,21 +155,32 @@ Visual Studio를 켜둔 채 PowerShell을 사용해도 된다.
 
 ## 8. PowerShell에서 질문 준비
 
-PowerShell을 열고 다음 두 명령을 입력한다.
+PowerShell을 열고 먼저 실제 실습 폴더로 이동한다.
 
 ```powershell
 cd C:\Opengl_codingTest\InitOpenGL
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
 
-두 번째 명령은 **현재 PowerShell 창에서만** 스크립트 실행을 허용한다. 창을 닫으면 유지되지 않는다.
-학교의 관리 정책으로 실행이 제한된 경우 이 명령으로도 허용되지 않을 수 있다.
-
-파일이 있는지 확인한다.
+사진처럼 **Ask-OpenGL.txt**로 저장되어 있다면 아래 명령으로 이름을 바꾼다.
+이름 변경은 처음 한 번만 한다. 이미 Ask-OpenGL.ps1이면 이 명령은 건너뛴다.
 
 ```powershell
+Rename-Item -LiteralPath ".\Ask-OpenGL.txt" -NewName "Ask-OpenGL.ps1"
+```
+
+txt는 텍스트 문서 확장자이고 ps1은 PowerShell 스크립트 확장자다. 실행 명령에 txt를 그대로 쓰는 것이 아니라 먼저 ps1로 바꾸는 것이다.
+파일 내용은 바뀌지 않는다.
+
+그다음 현재 창에서 스크립트 실행을 허용하고 파일이 있는지 확인한다.
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 dir .\Ask-OpenGL.ps1
 ```
+
+이 실행 정책은 **현재 PowerShell 창에서만** 적용된다. 창을 닫으면 유지되지 않는다.
+학교의 관리 정책으로 실행이 제한된 경우 이 명령으로도 허용되지 않을 수 있다.
+이제 탐색기와 PowerShell에 파일 이름이 Ask-OpenGL.ps1로 표시되어야 한다.
 
 ## 9. 전체 C++·셰이더 코드 읽히고 질문하기
 
@@ -260,7 +272,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 | Ollama is not reachable | Ollama 앱 또는 다른 창의 ollama serve 실행 상태를 확인한다. |
 | Model is not installed | 인터넷이 될 때 이 PC에서 ollama pull qwen2.5-coder:3b를 실행한다. |
 | 스크립트를 실행할 수 없다는 보안 오류 | 8번의 현재 창 실행 정책 명령을 확인한다. 조직 정책에 의한 제한이면 담당자에게 확인한다. |
-| Ask-OpenGL.ps1을 찾을 수 없음 | 현재 실습 폴더의 main.cpp 옆에 스크립트가 있는지, 확장자가 ps1.txt인지 확인한다. |
+| Ask-OpenGL.ps1을 찾을 수 없음 | 파일이 Ask-OpenGL.txt로 저장됐다면 8번의 Rename-Item 명령을 먼저 실행한다. main.cpp와 같은 폴더에 있는지도 확인한다. |
 | ProjectPath 경로가 없다는 오류 | 탐색기 주소와 -ProjectPath가 같은지 확인한다. 공백이 있는 경로도 따옴표로 감싼다. |
 | 읽은 파일 목록이 이상함 | 프로젝트 폴더를 너무 상위로 지정하지 않았는지 확인한다. |
 | 수정 전 코드를 설명함 | Visual Studio에서 Ctrl+Shift+S로 저장한 뒤 다시 질문한다. |
