@@ -62,6 +62,7 @@ C:\
       ├─ InitOpenGL.sln             ← Visual Studio에서 여는 파일
       ├─ InitOpenGL.vcxproj         ← 라이브러리·컴파일·실행 설정
       ├─ main.cpp                   ← 내가 수정하는 C++ 코드
+      ├─ PracticeStarterGL.h        ← 기존 실습의 공통 셰이더·VAO·VBO 함수
       ├─ shaders\                   ← 이미 포함되어 있음
       │  ├─ vertex.glsl             ← model/view/projection 변환
       │  └─ fragment.glsl           ← 정점 색상 × objectColor
@@ -165,6 +166,27 @@ glm::vec4 backgroundColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 ## 8. 실습 코드를 어디에 추가할지
 
+### 기존 19번 코드를 그대로 옮겨 실행할 때
+
+1. 최신 전체 ZIP을 압축 해제하고 InitOpenGL.sln을 연다.
+2. 기존 Practice19/main.cpp의 내용을 초기 main.cpp 전체와 교체한다. 두 코드의 내용을 합치지 않는다.
+3. 복사한 코드의 첫 줄만 다음처럼 바꾼다.
+
+```cpp
+// 기존 실습 폴더 구조에서 사용한 경로
+#include "../PracticeStarterGL.h"
+
+// 이 시작 폴더에서 사용할 경로
+#include "PracticeStarterGL.h"
+```
+
+위 두 줄을 모두 넣는 것이 아니라 기존 첫 줄을 새 줄로 교체한다.
+PracticeStarterGL.h는 ZIP의 main.cpp 옆에 이미 들어 있다. 별도로 다운로드하거나 상위 폴더에 놓을 필요 없다.
+포함된 shaders도 19번과 호환된다. 19번은 OBJ 모델 파일이 필요 없다.
+Ctrl+S로 저장한 뒤 Debug / x64에서 Ctrl+F5로 실행한다.
+
+### 초기 코드에서 직접 구현할 때
+
 초기 코드의 흐름은 다음과 같다.
 
 ```text
@@ -251,7 +273,7 @@ ZIP의 .vscode, build.bat, run.bat은 다른 편집기·명령창을 위한 추�
 
 1. 수정한 main.cpp를 Ctrl+S로 저장한다.
 2. [프로젝트 파일 전용 ZIP](https://github.com/hyun-codes/openGL_Labs/raw/refs/heads/master/downloads/VisualStudio-project-files.zip)을 받고 압축을 푼다.
-3. 안의 InitOpenGL.sln, InitOpenGL.vcxproj, shaders 폴더를 기존 main.cpp가 있는 폴더에 복사한다. main.cpp와 externals는 유지한다.
+3. 안의 InitOpenGL.sln, InitOpenGL.vcxproj, PracticeStarterGL.h, shaders 폴더를 기존 main.cpp가 있는 폴더에 복사한다. main.cpp와 externals는 유지한다.
 4. Visual Studio에서 파일 → 열기 → 프로젝트/솔루션으로 방금 넣은 InitOpenGL.sln을 연다.
 5. 위 5번과 6번의 화면 확인·실행 절차를 따른다.
 

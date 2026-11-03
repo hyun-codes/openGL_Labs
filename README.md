@@ -21,6 +21,7 @@ VS Code를 설치할 필요는 없다.
 각 단계의 클릭 위치와 폴더 구조는 [상세 README의 1번부터](InitOpenGL/README.md)에 설명되어 있다.
 라이브러리 연결과 DLL 복사는 프로젝트가 자동 처리하므로 별도로 설정하지 않아도 된다.
 초기 코드에는 shaders 폴더와 model/view/projection 셰이더, 셰이더 읽기·컴파일·연결, Camera 구조체와 행렬 전달이 포함되어 있다. 정점·VAO·VBO와 도형 그리기만 추가하면 된다.
+기존 실습용 PracticeStarterGL.h도 main.cpp 옆에 포함되어 있다. 19번 코드를 복사할 때는 첫 줄을 `#include "PracticeStarterGL.h"`로 바꾸면 된다. [19번 코드로 교체하는 절차](InitOpenGL/README.md#기존-19번-코드를-그대로-옮겨-실행할-때)를 참고한다.
 
 ## 다운로드
 
