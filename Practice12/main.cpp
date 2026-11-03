@@ -28,8 +28,8 @@ struct Board
 	float leftLaneRight = -0.35f;
 	float rightLaneLeft = -0.20f;
 	float rightLaneRight = 0.10f;
-	float meetingBottom = -0.13f;
-	float meetingTop = 0.13f;
+	float meetingBottom = -0.3f;
+	float meetingTop = 0.3f;
 };
 
 struct Square
@@ -371,8 +371,8 @@ void InitBoardVertices()
 	);
 
 	// 두 사각형이 함께 들어와야 하는 공간을 점선으로 표시한다.
-	const float meetingLeft = board.leftLaneLeft - 0.12f;
-	const float meetingRight = board.rightLaneRight + 0.12f;
+	const float meetingLeft = board.leftLaneLeft - 0.24f;
+	const float meetingRight = board.rightLaneRight + 0.24f;
 	const float dashLength = 0.055f;
 	const float dashGap = 0.035f;
 

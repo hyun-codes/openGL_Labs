@@ -21,5 +21,9 @@
   <Project Path="Practice17/Practice17.vcxproj" Id="fa170001-c6a1-4c17-9167-000000000017" />
   <Project Path="Practice18/Practice18.vcxproj" Id="fa180001-c6a1-4c18-9168-000000000018" />
   <Project Path="Practice19/Practice19.vcxproj" Id="fa190001-c6a1-4c19-9169-000000000019" />
+  <Project Path="Practice20/Practice20.vcxproj" Id="fa200001-c6a1-4c20-9170-000000000020" />
+  <Project Path="Practice21/Practice21.vcxproj" Id="fa210001-c6a1-4c21-9171-000000000021" />
+  <Project Path="Practice22/Practice22.vcxproj" Id="fa220001-c6a1-4c22-9172-000000000022" />
+  <Project Path="Practice23/Practice23.vcxproj" Id="fa230001-c6a1-4c23-9173-000000000023" />
   <Project Path="Practice0/Practice0.vcxproj" Id="05a0b1c2-d3e4-4f50-9a60-0b1c2d3e4f50" />
 </Solution>
