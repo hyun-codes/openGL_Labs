@@ -20,13 +20,14 @@ VS Code를 설치할 필요는 없다.
 
 각 단계의 클릭 위치와 폴더 구조는 [상세 README의 1번부터](InitOpenGL/README.md)에 설명되어 있다.
 라이브러리 연결과 DLL 복사는 프로젝트가 자동 처리하므로 별도로 설정하지 않아도 된다.
+초기 코드에는 shaders 폴더와 model/view/projection 셰이더, 셰이더 읽기·컴파일·연결, Camera 구조체와 행렬 전달이 포함되어 있다. 정점·VAO·VBO와 도형 그리기만 추가하면 된다.
 
 ## 다운로드
 
 | 파일 | 용도 |
 | --- | --- |
-| [OpenGL-school-starter.zip](https://github.com/hyun-codes/openGL_Labs/raw/refs/heads/master/downloads/OpenGL-school-starter.zip) | 초기 코드 + Visual Studio 솔루션·프로젝트 + 라이브러리 전체 |
-| [VisualStudio-project-files.zip](https://github.com/hyun-codes/openGL_Labs/raw/refs/heads/master/downloads/VisualStudio-project-files.zip) | 이미 압축을 푼 사용자에게 필요한 프로젝트 파일 두 개만 |
+| [OpenGL-school-starter.zip](https://github.com/hyun-codes/openGL_Labs/raw/refs/heads/master/downloads/OpenGL-school-starter.zip) | 셰이더·카메라 행렬 연결을 포함한 초기 코드 + Visual Studio 프로젝트 + 라이브러리 전체 |
+| [VisualStudio-project-files.zip](https://github.com/hyun-codes/openGL_Labs/raw/refs/heads/master/downloads/VisualStudio-project-files.zip) | 프로젝트 파일과 셰이더 파일. 기존 main.cpp는 유지 |
 | [externals.zip](https://github.com/hyun-codes/openGL_Labs/raw/refs/heads/master/downloads/externals.zip) | GLFW·GLEW·GLM 라이브러리만 |
 
 다운로드한 라이브러리 ZIP에는 기존 라이선스 파일이 포함되어 있다.

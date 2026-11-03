@@ -33,6 +33,7 @@ Visual Studio 프로그램만 설치되어 있고 C++ 컴파일러는 빠져 있
 
 **처음 시작할 때는 이 전체 ZIP 하나만 받으면 된다.**
 초기 코드, Visual Studio 프로젝트, GLFW·GLEW·GLM이 모두 들어 있다.
+`shaders/vertex.glsl`, `shaders/fragment.glsl`과 셰이더 읽기·컴파일·연결 코드, 카메라 구조체, model/view/projection 전달까지 포함되어 있다. 셰이더 폴더를 직접 만들 필요 없다.
 라이브러리 전용 externals.zip은 별도로 받을 필요 없다.
 
 ## 3. C드라이브에 실습 폴더 만들고 압축 풀기
@@ -61,6 +62,9 @@ C:\
       ├─ InitOpenGL.sln             ← Visual Studio에서 여는 파일
       ├─ InitOpenGL.vcxproj         ← 라이브러리·컴파일·실행 설정
       ├─ main.cpp                   ← 내가 수정하는 C++ 코드
+      ├─ shaders\                   ← 이미 포함되어 있음
+      │  ├─ vertex.glsl             ← model/view/projection 변환
+      │  └─ fragment.glsl           ← 정점 색상 × objectColor
       ├─ README.md
       ├─ build.bat                  ← 명령창 빌드용. Visual Studio에서는 사용하지 않아도 됨
       ├─ run.bat                    ← 명령창 실행용. Visual Studio에서는 사용하지 않아도 됨
@@ -132,7 +136,8 @@ C:\
 C:\Opengl_codingTest\InitOpenGL\bin\VisualStudio\Debug\
 ├─ OpenGLStudy.exe
 ├─ glew32.dll
-└─ glfw3.dll
+├─ glfw3.dll
+└─ shaders\                       ← 빌드할 때 자동 복사
 ```
 
 ## 7. 코드 수정하고 다시 실행하는 순서
@@ -165,24 +170,50 @@ glm::vec4 backgroundColor(1.0f, 1.0f, 1.0f, 1.0f);
 ```text
 main
   → InitOpenGL: GLFW·윈도우·컨텍스트·GLEW·뷰포트 초기화
+      → GLSL 파일 읽기 → 셰이더 컴파일 → 프로그램 연결
   → 반복: DrawScene → 버퍼 교체 → 이벤트 처리
   → Cleanup: 윈도우와 GLFW 정리
 ```
 
 - 현재 초기 코드에는 도형을 그리는 부분이 없다.
-- 이후 셰이더와 정점·VAO·VBO 초기화 함수를 추가한다.
+- 셰이더는 이미 포함·연결되어 있다. 이후 정점·VAO·VBO 초기화와 그리기를 추가하면 된다.
 - 초기화 함수는 OpenGL 컨텍스트와 GLEW 초기화가 성공한 뒤, 메인 반복문 전에 호출한다.
 - 도형을 그리는 호출은 DrawScene에 넣는다.
 - OpenGL 3.3 Core 설정이므로 glRectf/glBegin 대신 셰이더와 VAO·VBO 방식을 사용한다.
 - 별도 cpp 파일을 만들 때는 프로젝트 우클릭 → **추가 → 새 항목 → C++ 파일**로 추가한다. 탐색기에 파일을 복사하기만 하면 프로젝트에 자동으로 포함되지 않을 수 있다.
-- 셰이더를 `shaders` 폴더에 넣었다면 `shaders/vertex.glsl`처럼 프로젝트 폴더 기준으로 읽을 수 있다. 실행 작업 경로는 InitOpenGL.vcxproj가 있는 폴더다.
+- 솔루션 탐색기에서 vertex.glsl과 fragment.glsl을 열어 수정할 수 있다. 실제 파일은 shaders 폴더에 있다. 실행 작업 경로는 InitOpenGL.vcxproj가 있는 폴더다. 셰이더는 실행 폴더에도 빌드 시 자동 복사된다.
+
+### 이미 준비되어 있는 셰이더와 카메라
+
+`ReadShaderFile → CompileShader → CreateShaderProgram`이 GLSL을 읽고 컴파일·연결한다.
+InitOpenGL에서 셰이더 프로그램을 한 번 만들고, DrawScene에서 glUseProgram으로 사용한다.
+Cleanup은 프로그램을 삭제한다. 파일 읽기·컴파일·연결 실패는 콘솔에 출력된다.
+
+vertex.glsl에는 다음 변환이 들어 있다. 18·19번과 같은 방식이다.
+
+```glsl
+gl_Position = projectionTransform * viewTransform * modelTransform * vec4(vPosition, 1.0);
+```
+
+| 값 | C++에서 준비하는 내용 |
+| --- | --- |
+| modelTransform | 도형의 이동·회전·크기. 기본값은 단위행렬 |
+| viewTransform | Camera 구조체의 position/target/up으로 glm::lookAt 계산 |
+| projectionTransform | 시야각·창 비율·near/far로 glm::perspective 계산 |
+| objectColor | 정점 색상에 곱하는 색. 기본 흰색이므로 정점 색상이 유지됨 |
+
+Camera의 기본 위치는 (0,0,5), 바라보는 곳은 원점이다. 창 크기가 바뀌면 투영 비율도 갱신된다.
+카메라를 움직이는 계산은 C++에서 하고 그 결과인 view 행렬을 셰이더에 전달한다.
+현재 시작 환경에는 카메라 조작 키를 추가하지 않았다. camera.position 또는 camera.target을 바꾸면 다음 프레임에 반영된다.
+이 셰이더의 VAO 속성 0번은 위치 vec3, 1번은 색상 vec3이다.
+색상 버퍼 없이 위치만 쓰려면 1번 속성을 비활성화하고 glVertexAttrib3f(1,1,1,1)로 기본 흰색을 지정할 수 있다.
 
 ## 9. 문제가 생겼을 때
 
 | 상황 | 확인할 내용 |
 | --- | --- |
 | 구성 없음 / 시작 항목 선택 | 파일 → 열기 → 프로젝트/솔루션 → InitOpenGL.sln을 연다. main.cpp만 열거나 폴더만 연 상태가 아닌지 확인한다. |
-| InitOpenGL.sln이 없음 | 예전 ZIP일 수 있다. 문서 위쪽의 프로젝트 파일 전용 ZIP을 받아 두 파일을 기존 main.cpp 옆에 넣는다. |
+| InitOpenGL.sln이 없음 | 예전 ZIP일 수 있다. 문서 맨 아래 부록의 프로젝트 파일 ZIP 적용 절차를 따른다. |
 | 시작 프로젝트를 선택하라는 메시지 | 솔루션 탐색기에서 InitOpenGL 프로젝트 우클릭 → 시작 프로젝트로 설정 |
 | C++ 빌드 도구가 없다는 메시지 | 1번의 Visual Studio Installer에서 C++를 사용한 데스크톱 개발 설치 |
 | Windows SDK를 찾을 수 없음 | Visual Studio Installer에서 Windows SDK 설치 후 솔루션을 다시 연다. |
@@ -190,6 +221,7 @@ main
 | glew32.lib / glfw3dll.lib를 찾을 수 없음 | x64 설정인지, externals의 lib·lib-vc2022·lib-vc2026 폴더가 있는지 확인한다. |
 | LNK1104로 OpenGLStudy.exe를 열 수 없음 | 이전에 실행한 OpenGL 창을 종료한 후 다시 빌드한다. |
 | DLL이 없다는 메시지 | 빌드가 성공했는지 확인하고, bin\VisualStudio\Debug 안에 glew32.dll과 glfw3.dll이 있는지 확인한다. |
+| 셰이더 파일을 열 수 없다는 메시지 | main.cpp 옆 shaders 폴더와 안의 glsl 두 파일을 확인한다. 프로젝트 속성 → 디버깅 → 작업 디렉터리가 프로젝트 폴더인지 확인한다. |
 | 수정한 내용이 실행에 반영되지 않음 | 솔루션 탐색기의 main.cpp를 수정했는지, Ctrl+S로 저장했는지 확인하고 Ctrl+Shift+B로 빌드 후 Ctrl+F5로 실행한다. |
 | 빌드 오류 후 이전 버전을 실행할지 물음 | 아니요를 누르고 보기 → 출력의 빌드 메시지에서 첫 오류를 확인한다. |
 | OpenGL 3.3 윈도우 생성 실패 | GPU와 그래픽 드라이버의 OpenGL 3.3 지원을 확인한다. |
@@ -219,6 +251,9 @@ ZIP의 .vscode, build.bat, run.bat은 다른 편집기·명령창을 위한 추�
 
 1. 수정한 main.cpp를 Ctrl+S로 저장한다.
 2. [프로젝트 파일 전용 ZIP](https://github.com/hyun-codes/openGL_Labs/raw/refs/heads/master/downloads/VisualStudio-project-files.zip)을 받고 압축을 푼다.
-3. 안의 InitOpenGL.sln과 InitOpenGL.vcxproj 두 파일을 기존 main.cpp가 있는 폴더에 복사한다. main.cpp와 externals는 유지한다.
+3. 안의 InitOpenGL.sln, InitOpenGL.vcxproj, shaders 폴더를 기존 main.cpp가 있는 폴더에 복사한다. main.cpp와 externals는 유지한다.
 4. Visual Studio에서 파일 → 열기 → 프로젝트/솔루션으로 방금 넣은 InitOpenGL.sln을 연다.
 5. 위 5번과 6번의 화면 확인·실행 절차를 따른다.
+
+이 프로젝트 전용 ZIP은 기존 코드를 덮어쓰지 않기 때문에 새 셰이더 로딩 C++ 코드까지 자동 적용하지는 않는다.
+셰이더·카메라 초기화가 포함된 최신 초기 코드부터 시작하려면 전체 시작 ZIP을 새 폴더에 풀어 사용한다. 기존 수정 코드는 별도로 보관한다.
