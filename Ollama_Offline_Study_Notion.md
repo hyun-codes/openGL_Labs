@@ -90,9 +90,13 @@ OpenGL에서 VAO와 VBO의 차이를 한국어로 짧게 설명해줘.
 
 **[Ask-OpenGL.ps1 다운로드](https://github.com/hyun-codes/openGL_Labs/raw/refs/heads/master/Ask-OpenGL.ps1)**
 
-1. C드라이브에 **OllamaStudy** 폴더를 만든다.
-2. 다운로드한 스크립트를 `C:\OllamaStudy`로 옮긴다.
+1. 기존 실습 폴더 `C:\Opengl_codingTest\InitOpenGL`을 연다.
+2. 다운로드한 스크립트를 **main.cpp 옆에** 넣는다. 별도 폴더를 만들 필요 없다.
 3. 파일 이름이 **Ask-OpenGL.ps1**인지 확인한다. `.ps1.txt`가 붙으면 안 된다.
+
+스크립트 파일은 긴 PowerShell 함수를 매번 붙여넣지 않기 위한 편의 기능이다.
+앞서 PowerShell에 Ask-OpenGL 함수를 직접 입력한 방식도 동작하며, 그 방식에는 별도 스크립트 파일도 필요 없다.
+이 문서에서는 다시 사용하기 쉽게 스크립트를 기존 실습 폴더에 두는 방법으로 설명한다. Visual Studio 프로젝트에 소스로 추가할 필요는 없다.
 
 브라우저에서 다운로드 대신 코드가 보이면 Ctrl+S로 저장한다. 파일 형식은 **모든 파일**, 이름은 **Ask-OpenGL.ps1**로 지정한다.
 
@@ -103,13 +107,12 @@ OpenGL에서 VAO와 VBO의 차이를 한국어로 짧게 설명해줘.
 
 ```text
 C:\
-├─ OllamaStudy\
-│  └─ Ask-OpenGL.ps1          ← 코드 읽기·질문용 스크립트
 └─ Opengl_codingTest\
    └─ InitOpenGL\            ← Visual Studio 프로젝트
       ├─ InitOpenGL.sln
       ├─ InitOpenGL.vcxproj
       ├─ main.cpp
+      ├─ Ask-OpenGL.ps1       ← main.cpp 옆에 추가. 새 폴더는 필요 없음
       ├─ PracticeStarterGL.h
       ├─ CubeVertices.h
       ├─ shaders\
@@ -154,7 +157,7 @@ Visual Studio를 켜둔 채 PowerShell을 사용해도 된다.
 PowerShell을 열고 다음 두 명령을 입력한다.
 
 ```powershell
-cd C:\OllamaStudy
+cd C:\Opengl_codingTest\InitOpenGL
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
 
@@ -241,7 +244,7 @@ Visual Studio에서 코드 작성
 3. PowerShell을 열고 다음을 입력한다.
 
 ```powershell
-cd C:\OllamaStudy
+cd C:\Opengl_codingTest\InitOpenGL
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\Ask-OpenGL.ps1 -ProjectPath "C:\Opengl_codingTest\InitOpenGL" -Question "현재 구현된 기능과 아직 비어 있는 부분을 정리해줘."
 ```
@@ -257,7 +260,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 | Ollama is not reachable | Ollama 앱 또는 다른 창의 ollama serve 실행 상태를 확인한다. |
 | Model is not installed | 인터넷이 될 때 이 PC에서 ollama pull qwen2.5-coder:3b를 실행한다. |
 | 스크립트를 실행할 수 없다는 보안 오류 | 8번의 현재 창 실행 정책 명령을 확인한다. 조직 정책에 의한 제한이면 담당자에게 확인한다. |
-| Ask-OpenGL.ps1을 찾을 수 없음 | C:\OllamaStudy 안에 스크립트가 있는지, 확장자가 ps1.txt인지 확인한다. |
+| Ask-OpenGL.ps1을 찾을 수 없음 | 현재 실습 폴더의 main.cpp 옆에 스크립트가 있는지, 확장자가 ps1.txt인지 확인한다. |
 | ProjectPath 경로가 없다는 오류 | 탐색기 주소와 -ProjectPath가 같은지 확인한다. 공백이 있는 경로도 따옴표로 감싼다. |
 | 읽은 파일 목록이 이상함 | 프로젝트 폴더를 너무 상위로 지정하지 않았는지 확인한다. |
 | 수정 전 코드를 설명함 | Visual Studio에서 Ctrl+Shift+S로 저장한 뒤 다시 질문한다. |
