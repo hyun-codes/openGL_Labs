@@ -12,7 +12,8 @@ C++와 OpenGL을 공부하며 작성한 실습 코드이다.
 | [OpenGL-school-starter.zip](https://github.com/hyun-codes/openGL_Labs/raw/refs/heads/master/downloads/OpenGL-school-starter.zip) | 초기 코드 + 빌드·실행 설정 + externals 전체. 처음 시작할 때 권장 |
 | [externals.zip](https://github.com/hyun-codes/openGL_Labs/raw/refs/heads/master/downloads/externals.zip) | GLFW·GLEW·GLM만 받기. 기존 실습 폴더에 externals 폴더를 넣을 때 사용 |
 
-시작 ZIP을 압축 해제하고 InitOpenGL 폴더를 VS Code로 연다.
+시작 ZIP을 압축 해제한다. Visual Studio에서는 **InitOpenGL.sln**을 열고 **Ctrl+F5 / F5**로 실행한다.
+VS Code에서는 InitOpenGL 폴더를 연다.
 Visual Studio 2022/2026의 **C++를 사용한 데스크톱 개발** 도구가 설치된 Windows에서 아래 순서로 실행한다.
 
 ```powershell

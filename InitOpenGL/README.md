@@ -3,6 +3,21 @@
 Windows / Visual Studio 2022 또는 2026의 MSVC x64 / VS Code 기준이다.
 경로를 D드라이브 등에 고정하지 않으므로 폴더 전체를 다른 위치로 옮겨도 된다.
 
+## Visual Studio에서 ▶ / F5로 실행하기
+
+VS Code 없이 Visual Studio만 있어도 된다.
+
+1. 아래 시작용 ZIP의 최신 버전을 받아 압축을 푼다.
+2. **InitOpenGL.sln을 더블클릭한다.** 폴더 열기나 main.cpp만 열기로 들어가지 않는다.
+3. Visual Studio 위쪽에서 **Debug / x64**를 확인한다.
+4. **Ctrl+F5**로 실행하거나, 중단점 디버깅은 **F5 / 로컬 Windows 디버거 ▶**를 누른다.
+5. 소스를 수정하고 Ctrl+S로 저장한 뒤 다시 Ctrl+F5를 누르면 빌드하고 실행한다.
+
+시작 프로젝트가 선택되지 않았다면 솔루션 탐색기에서 InitOpenGL 프로젝트를 우클릭하고 **시작 프로젝트로 설정**한다.
+프로젝트를 열 때 C++ 도구 설치 안내가 나오면 C++를 사용한 데스크톱 개발을 설치한다.
+헤더·라이브러리 경로와 DLL 복사는 프로젝트에 설정되어 있다. build.bat을 별도로 실행할 필요가 없다.
+위쪽에 **구성 없음**이 보이면 솔루션 대신 폴더나 파일만 연 상태이므로 파일 → 열기 → 프로젝트/솔루션에서 InitOpenGL.sln을 연다.
+
 ## 1. 가장 쉬운 방법: 준비된 ZIP 하나 받기
 
 **[OpenGL 학교용 시작 폴더 다운로드](https://github.com/hyun-codes/openGL_Labs/raw/refs/heads/master/downloads/OpenGL-school-starter.zip)**
@@ -10,10 +25,10 @@ Windows / Visual Studio 2022 또는 2026의 MSVC x64 / VS Code 기준이다.
 1. ZIP을 다운로드한다.
 2. 마우스 오른쪽 → 모두 압축 풀기를 누른다. ZIP 안에서 바로 실행하지 않는다.
 3. 압축을 푼 곳의 `InitOpenGL` 폴더를 원하는 위치로 옮긴다. 예: `C:\OpenGLStudy`.
-4. VS Code에서 **파일 → 폴더 열기**로 그 폴더를 연다.
+4. Visual Studio에서는 InitOpenGL.sln을 연다. VS Code에서는 **파일 → 폴더 열기**로 그 폴더를 연다.
 5. 폴더 바로 아래에 `main.cpp`, `build.bat`, `externals`가 함께 있는지 확인한다.
 
-이 ZIP에는 초기 코드, 빌드·실행 파일, VS Code 설정, GLFW·GLEW·GLM 라이브러리가 모두 들어 있다.
+이 ZIP에는 초기 코드, Visual Studio 솔루션·프로젝트, 빌드·실행 파일, VS Code 설정, GLFW·GLEW·GLM 라이브러리가 모두 들어 있다.
 폴더 이름은 바꿔도 된다. 컴파일러는 ZIP에 포함하지 않으므로 3번 설치 확인은 필요하다.
 
 ## 2. 직접 폴더를 구성하거나 코드만 복사하는 방법
@@ -21,10 +36,13 @@ Windows / Visual Studio 2022 또는 2026의 MSVC x64 / VS Code 기준이다.
 **[라이브러리만 다운로드: externals.zip](https://github.com/hyun-codes/openGL_Labs/raw/refs/heads/master/downloads/externals.zip)**
 
 새 폴더를 만들고, 이 GitHub 폴더의 `main.cpp`, `build.bat`, `run.bat`, `.vscode`를 복사한다.
+Visual Studio를 사용한다면 `InitOpenGL.sln`과 `InitOpenGL.vcxproj`도 함께 복사한다.
 externals.zip을 압축 해제하고 그 안의 **externals 폴더 전체**를 새 폴더 안에 넣는다.
 
 ```text
 C:\OpenGLStudy\                  ← VS Code에서 여는 폴더
+├─ InitOpenGL.sln                 ← Visual Studio에서는 이 파일을 연다
+├─ InitOpenGL.vcxproj             ← Visual Studio 빌드·라이브러리 설정
 ├─ main.cpp                      ← 초기화·메인 루프·배경 그리기
 ├─ build.bat                     ← 컴파일·라이브러리 연결·DLL 복사 자동 처리
 ├─ run.bat                       ← 프로그램 실행
