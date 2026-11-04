@@ -2,6 +2,8 @@
 
 C++와 OpenGL을 공부하며 작성한 실습 코드다. 실습별 코드와 프로젝트는 Practice 폴더에 있다.
 
+**[정육면체 애니메이션 연습 4종](AnimationPractices.md)**: 로봇 이동·점프, 굴러가는 육면체, 그네, 시소를 각각 별도 프로젝트로 구현했다. AnimationPractices.sln에서 선택해 실행할 수 있다.
+
 **[Ollama 설치·실행 안내 — Notion 가져오기용](Ollama_Offline_Study_Notion.md)**: 설치·모델 다운로드·실행 명령을 정리했다. 실행 후 필요한 코드를 직접 붙여넣어 질문하면 된다.
 
 ## Visual Studio만 있는 학교 PC에서 시작하기

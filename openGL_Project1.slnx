@@ -26,4 +26,8 @@
   <Project Path="Practice22/Practice22.vcxproj" Id="fa220001-c6a1-4c22-9172-000000000022" />
   <Project Path="Practice23/Practice23.vcxproj" Id="fa230001-c6a1-4c23-9173-000000000023" />
   <Project Path="Practice0/Practice0.vcxproj" Id="05a0b1c2-d3e4-4f50-9a60-0b1c2d3e4f50" />
+  <Project Path="RobotPractice/RobotPractice.vcxproj" Id="c541be95-941b-5418-a77d-ab63527d86ef" />
+  <Project Path="RollingCubePractice/RollingCubePractice.vcxproj" Id="822ef77e-9437-5124-ad07-972a0f6a3539" />
+  <Project Path="SwingPractice/SwingPractice.vcxproj" Id="93915f1b-ab03-501b-a7fe-4924676d8a76" />
+  <Project Path="SeesawPractice/SeesawPractice.vcxproj" Id="384adf61-16a8-5629-85d5-5c1d0ffb3a09" />
 </Solution>
