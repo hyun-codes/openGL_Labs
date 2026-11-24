@@ -22,9 +22,9 @@ VS Code를 설치할 필요는 없다.
 
 각 단계의 클릭 위치와 폴더 구조는 [상세 README의 1번부터](InitOpenGL/README.md)에 설명되어 있다.
 라이브러리 연결과 DLL 복사는 프로젝트가 자동 처리하므로 별도로 설정하지 않아도 된다.
-초기 코드에는 shaders 폴더와 model/view/projection 셰이더, 셰이더 읽기·컴파일·연결, Camera 구조체와 행렬 전달이 포함되어 있다. 정점·VAO·VBO와 도형 그리기만 추가하면 된다.
-기존 실습용 PracticeStarterGL.h도 main.cpp 옆에 포함되어 있다. 19번 코드를 복사할 때는 첫 줄을 `#include "PracticeStarterGL.h"`로 바꾸면 된다. [19번 코드로 교체하는 절차](InitOpenGL/README.md#기존-19번-코드를-그대로-옮겨-실행할-때)를 참고한다.
-정육면체 정점은 [CubeVertices.h](InitOpenGL/CubeVertices.h)에 있다. [VAO·VBO 사용 예제](InitOpenGL/CUBE_USAGE.md)를 보고 로봇·시소 등의 부품으로 재사용할 수 있다. 전체 ZIP에도 포함되어 있다.
+초기 소스는 main.cpp, vertex.glsl, fragment.glsl 세 파일이며 같은 폴더에 있다. 셰이더 로딩과 Camera 구조체 및 행렬 전달은 main.cpp에 구현되어 있다.
+기본 설정은 main.cpp에서 OpenGL 초기화와 셰이더 로딩을 직접 구현한다. 같은 파일에 VAO·VBO 초기화와 입력 및 그리기 함수를 추가하면 된다.
+정육면체 정점 배열은 InitOpenGL/main.cpp 상단에 포함되어 있다. 같은 파일에서 VAO·VBO와 모델 그리기를 구현해 사용한다.
 
 ## 다운로드
 

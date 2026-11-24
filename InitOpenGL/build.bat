@@ -5,8 +5,8 @@ cd /d "%~dp0"
 if not exist "externals\glew\include\GL\glew.h" goto missing_libraries
 if not exist "externals\glfw\include\GLFW\glfw3.h" goto missing_libraries
 if not exist "externals\glm\glm\glm.hpp" goto missing_libraries
-if not exist "shaders\vertex.glsl" goto missing_shaders
-if not exist "shaders\fragment.glsl" goto missing_shaders
+if not exist "vertex.glsl" goto missing_shaders
+if not exist "fragment.glsl" goto missing_shaders
 
 set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
 if not exist "%VSWHERE%" goto missing_compiler
@@ -26,10 +26,9 @@ copy /Y "externals\glew\bin\Release\x64\glew32.dll" "bin\" >nul
 if errorlevel 1 exit /b 1
 copy /Y "externals\glfw\%GLFW_LIB%\glfw3.dll" "bin\" >nul
 if errorlevel 1 exit /b 1
-if not exist "bin\shaders" mkdir "bin\shaders"
-copy /Y "shaders\vertex.glsl" "bin\shaders\" >nul
+copy /Y "vertex.glsl" "bin\" >nul
 if errorlevel 1 exit /b 1
-copy /Y "shaders\fragment.glsl" "bin\shaders\" >nul
+copy /Y "fragment.glsl" "bin\" >nul
 if errorlevel 1 exit /b 1
 echo Build OK. Run: .\run.bat
 exit /b 0
@@ -47,6 +46,6 @@ echo See README.md for instructions.
 exit /b 1
 
 :missing_shaders
-echo ERROR: shaders\vertex.glsl or shaders\fragment.glsl is missing.
-echo Extract the complete school starter ZIP, including the shaders folder.
+echo ERROR: vertex.glsl or fragment.glsl is missing beside main.cpp.
+echo Extract the complete school starter ZIP.
 exit /b 1

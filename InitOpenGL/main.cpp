@@ -9,6 +9,68 @@
 #include <sstream>
 #include <string>
 
+struct CubeVertex
+{
+	float x, y, z;
+	float R, G, B;
+};
+
+// 15·16번과 같은 좌표와 색상이다. 중심은 원점, 한 변의 길이는 0.6이다.
+// 면 순서: 앞(-z), 뒤(+z), 왼쪽(-x), 오른쪽(+x), 위(+y), 아래(-y).
+// 각 면은 삼각형 2개, 정점 6개이며 바깥에서 보았을 때 반시계 방향이다.
+constexpr CubeVertex cubeVertices[] = {
+	// 앞면
+	{-0.3f, 0.3f,-0.3f, 1.0f,0.0f,0.0f},
+	{ 0.3f, 0.3f,-0.3f, 0.0f,1.0f,0.0f},
+	{ 0.3f,-0.3f,-0.3f, 0.0f,0.0f,1.0f},
+	{-0.3f, 0.3f,-0.3f, 1.0f,0.0f,0.0f},
+	{ 0.3f,-0.3f,-0.3f, 0.0f,0.0f,1.0f},
+	{-0.3f,-0.3f,-0.3f, 1.0f,1.0f,0.0f},
+
+	// 뒷면
+	{-0.3f, 0.3f, 0.3f, 0.0f,1.0f,1.0f},
+	{-0.3f,-0.3f, 0.3f, 1.0f,1.0f,1.0f},
+	{ 0.3f,-0.3f, 0.3f, 1.0f,0.5f,0.0f},
+	{-0.3f, 0.3f, 0.3f, 0.0f,1.0f,1.0f},
+	{ 0.3f,-0.3f, 0.3f, 1.0f,0.5f,0.0f},
+	{ 0.3f, 0.3f, 0.3f, 1.0f,0.0f,1.0f},
+
+	// 왼쪽 면
+	{-0.3f, 0.3f,-0.3f, 1.0f,0.0f,0.0f},
+	{-0.3f,-0.3f,-0.3f, 1.0f,1.0f,0.0f},
+	{-0.3f,-0.3f, 0.3f, 1.0f,1.0f,1.0f},
+	{-0.3f, 0.3f,-0.3f, 1.0f,0.0f,0.0f},
+	{-0.3f,-0.3f, 0.3f, 1.0f,1.0f,1.0f},
+	{-0.3f, 0.3f, 0.3f, 0.0f,1.0f,1.0f},
+
+	// 오른쪽 면
+	{ 0.3f, 0.3f,-0.3f, 0.0f,1.0f,0.0f},
+	{ 0.3f, 0.3f, 0.3f, 1.0f,0.0f,1.0f},
+	{ 0.3f,-0.3f, 0.3f, 1.0f,0.5f,0.0f},
+	{ 0.3f, 0.3f,-0.3f, 0.0f,1.0f,0.0f},
+	{ 0.3f,-0.3f, 0.3f, 1.0f,0.5f,0.0f},
+	{ 0.3f,-0.3f,-0.3f, 0.0f,0.0f,1.0f},
+
+	// 윗면
+	{-0.3f, 0.3f,-0.3f, 1.0f,0.0f,0.0f},
+	{-0.3f, 0.3f, 0.3f, 0.0f,1.0f,1.0f},
+	{ 0.3f, 0.3f, 0.3f, 1.0f,0.0f,1.0f},
+	{-0.3f, 0.3f,-0.3f, 1.0f,0.0f,0.0f},
+	{ 0.3f, 0.3f, 0.3f, 1.0f,0.0f,1.0f},
+	{ 0.3f, 0.3f,-0.3f, 0.0f,1.0f,0.0f},
+
+	// 아랫면
+	{-0.3f,-0.3f,-0.3f, 1.0f,1.0f,0.0f},
+	{ 0.3f,-0.3f,-0.3f, 0.0f,0.0f,1.0f},
+	{ 0.3f,-0.3f, 0.3f, 1.0f,0.5f,0.0f},
+	{-0.3f,-0.3f,-0.3f, 1.0f,1.0f,0.0f},
+	{ 0.3f,-0.3f, 0.3f, 1.0f,0.5f,0.0f},
+	{-0.3f,-0.3f, 0.3f, 1.0f,1.0f,1.0f}
+};
+
+constexpr int cubeVertexCount = sizeof(cubeVertices) / sizeof(CubeVertex);
+constexpr int cubeVerticesPerFace = 6;
+
 struct Camera
 {
 	glm::vec3 position{0.0f, 0.0f, 5.0f};
@@ -86,7 +148,7 @@ bool InitOpenGL()
 	glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
 	framebufferCallBack(window, framebufferWidth, framebufferHeight);
 	glEnable(GL_DEPTH_TEST);
-	shaderProgram = CreateShaderProgram("shaders/vertex.glsl", "shaders/fragment.glsl");
+	shaderProgram = CreateShaderProgram("vertex.glsl", "fragment.glsl");
 	if (!shaderProgram)
 	{
 		Cleanup();

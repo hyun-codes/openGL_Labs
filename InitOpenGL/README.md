@@ -33,7 +33,7 @@ Visual Studio 프로그램만 설치되어 있고 C++ 컴파일러는 빠져 있
 
 **처음 시작할 때는 이 전체 ZIP 하나만 받으면 된다.**
 초기 코드, Visual Studio 프로젝트, GLFW·GLEW·GLM이 모두 들어 있다.
-`shaders/vertex.glsl`, `shaders/fragment.glsl`과 셰이더 읽기·컴파일·연결 코드, 카메라 구조체, model/view/projection 전달까지 포함되어 있다. 셰이더 폴더를 직접 만들 필요 없다.
+`vertex.glsl`, `fragment.glsl`과 셰이더 읽기·컴파일·연결 코드, 카메라 구조체, model/view/projection 전달까지 포함되어 있다. 직접 수정하는 소스는 main.cpp와 같은 폴더의 vertex.glsl, fragment.glsl 세 파일이다.
 라이브러리 전용 externals.zip은 별도로 받을 필요 없다.
 
 ## 3. C드라이브에 실습 폴더 만들고 압축 풀기
@@ -62,12 +62,8 @@ C:\
       ├─ InitOpenGL.sln             ← Visual Studio에서 여는 파일
       ├─ InitOpenGL.vcxproj         ← 라이브러리·컴파일·실행 설정
       ├─ main.cpp                   ← 내가 수정하는 C++ 코드
-      ├─ PracticeStarterGL.h        ← 기존 실습의 공통 셰이더·VAO·VBO 함수
-      ├─ CubeVertices.h             ← 15·16번의 정육면체 정점 36개
-      ├─ CUBE_USAGE.md              ← 정점 사용·버퍼 초기화·그리기 예제
-      ├─ shaders\                   ← 이미 포함되어 있음
-      │  ├─ vertex.glsl             ← model/view/projection 변환
-      │  └─ fragment.glsl           ← 정점 색상 × objectColor
+      ├─ vertex.glsl                ← model/view/projection 변환
+      ├─ fragment.glsl              ← 정점 색상 × objectColor
       ├─ README.md
       ├─ build.bat                  ← 명령창 빌드용. Visual Studio에서는 사용하지 않아도 됨
       ├─ run.bat                    ← 명령창 실행용. Visual Studio에서는 사용하지 않아도 됨
@@ -140,7 +136,8 @@ C:\Opengl_codingTest\InitOpenGL\bin\VisualStudio\Debug\
 ├─ OpenGLStudy.exe
 ├─ glew32.dll
 ├─ glfw3.dll
-└─ shaders\                       ← 빌드할 때 자동 복사
+├─ vertex.glsl                    ← 빌드할 때 자동 복사
+└─ fragment.glsl                  ← 빌드할 때 자동 복사
 ```
 
 ## 7. 코드 수정하고 다시 실행하는 순서
@@ -168,27 +165,16 @@ glm::vec4 backgroundColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 ## 8. 실습 코드를 어디에 추가할지
 
-정육면체가 필요하면 **[CubeVertices.h 사용 예제](CUBE_USAGE.md)**를 참고한다.
-헤더를 include하고 정점을 VBO에 올리면 로봇·시소 등의 부품으로 재사용할 수 있다.
+정육면체의 CubeVertex 구조체와 cubeVertices 정점 배열은 main.cpp 상단에 들어 있다.
+위치 3개와 RGB 3개를 가진 정점이며 중심은 원점, 한 변의 길이는 0.6이다.
+VAO·VBO 초기화와 입력, 애니메이션, 그리기도 main.cpp 안에 구현한다.
 
-### 기존 19번 코드를 그대로 옮겨 실행할 때
+### main.cpp에서 OpenGL 함수를 직접 구현하기
 
-1. 최신 전체 ZIP을 압축 해제하고 InitOpenGL.sln을 연다.
-2. 기존 Practice19/main.cpp의 내용을 초기 main.cpp 전체와 교체한다. 두 코드의 내용을 합치지 않는다.
-3. 복사한 코드의 첫 줄만 다음처럼 바꾼다.
-
-```cpp
-// 기존 실습 폴더 구조에서 사용한 경로
-#include "../PracticeStarterGL.h"
-
-// 이 시작 폴더에서 사용할 경로
-#include "PracticeStarterGL.h"
-```
-
-위 두 줄을 모두 넣는 것이 아니라 기존 첫 줄을 새 줄로 교체한다.
-PracticeStarterGL.h는 ZIP의 main.cpp 옆에 이미 들어 있다. 별도로 다운로드하거나 상위 폴더에 놓을 필요 없다.
-포함된 shaders도 19번과 호환된다. 19번은 OBJ 모델 파일이 필요 없다.
-Ctrl+S로 저장한 뒤 Debug / x64에서 Ctrl+F5로 실행한다.
+초기 코드의 셰이더 읽기·컴파일·연결과 uniform 전달은 main.cpp에 구현되어 있다.
+VAO와 VBO 초기화, 입력 처리, Update와 그리기 함수도 같은 파일에 추가한다.
+셰이더 두 파일은 main.cpp 옆에 두고 수정한다.
+모델의 부품별 위치와 크기 및 회전은 DrawScene에서 모델 행렬을 만들어 적용한다.
 
 ### 초기 코드에서 직접 구현할 때
 
@@ -208,7 +194,7 @@ main
 - 도형을 그리는 호출은 DrawScene에 넣는다.
 - OpenGL 3.3 Core 설정이므로 glRectf/glBegin 대신 셰이더와 VAO·VBO 방식을 사용한다.
 - 별도 cpp 파일을 만들 때는 프로젝트 우클릭 → **추가 → 새 항목 → C++ 파일**로 추가한다. 탐색기에 파일을 복사하기만 하면 프로젝트에 자동으로 포함되지 않을 수 있다.
-- 솔루션 탐색기에서 vertex.glsl과 fragment.glsl을 열어 수정할 수 있다. 실제 파일은 shaders 폴더에 있다. 실행 작업 경로는 InitOpenGL.vcxproj가 있는 폴더다. 셰이더는 실행 폴더에도 빌드 시 자동 복사된다.
+- 솔루션 탐색기에서 vertex.glsl과 fragment.glsl을 열어 수정할 수 있다. 실제 파일은 main.cpp 옆에 있다. 실행 작업 경로는 InitOpenGL.vcxproj가 있는 폴더다. 셰이더는 실행 폴더에도 빌드 시 자동 복사된다.
 
 ### 이미 준비되어 있는 셰이더와 카메라
 
@@ -248,7 +234,7 @@ Camera의 기본 위치는 (0,0,5), 바라보는 곳은 원점이다. 창 크기
 | glew32.lib / glfw3dll.lib를 찾을 수 없음 | x64 설정인지, externals의 lib·lib-vc2022·lib-vc2026 폴더가 있는지 확인한다. |
 | LNK1104로 OpenGLStudy.exe를 열 수 없음 | 이전에 실행한 OpenGL 창을 종료한 후 다시 빌드한다. |
 | DLL이 없다는 메시지 | 빌드가 성공했는지 확인하고, bin\VisualStudio\Debug 안에 glew32.dll과 glfw3.dll이 있는지 확인한다. |
-| 셰이더 파일을 열 수 없다는 메시지 | main.cpp 옆 shaders 폴더와 안의 glsl 두 파일을 확인한다. 프로젝트 속성 → 디버깅 → 작업 디렉터리가 프로젝트 폴더인지 확인한다. |
+| 셰이더 파일을 열 수 없다는 메시지 | main.cpp 옆 vertex.glsl과 fragment.glsl을 확인한다. 프로젝트 속성 → 디버깅 → 작업 디렉터리가 프로젝트 폴더인지 확인한다. |
 | 수정한 내용이 실행에 반영되지 않음 | 솔루션 탐색기의 main.cpp를 수정했는지, Ctrl+S로 저장했는지 확인하고 Ctrl+Shift+B로 빌드 후 Ctrl+F5로 실행한다. |
 | 빌드 오류 후 이전 버전을 실행할지 물음 | 아니요를 누르고 보기 → 출력의 빌드 메시지에서 첫 오류를 확인한다. |
 | OpenGL 3.3 윈도우 생성 실패 | GPU와 그래픽 드라이버의 OpenGL 3.3 지원을 확인한다. |
@@ -278,7 +264,7 @@ ZIP의 .vscode, build.bat, run.bat은 다른 편집기·명령창을 위한 추�
 
 1. 수정한 main.cpp를 Ctrl+S로 저장한다.
 2. [프로젝트 파일 전용 ZIP](https://github.com/hyun-codes/openGL_Labs/raw/refs/heads/master/downloads/VisualStudio-project-files.zip)을 받고 압축을 푼다.
-3. 안의 InitOpenGL.sln, InitOpenGL.vcxproj, PracticeStarterGL.h, CubeVertices.h, shaders 폴더를 기존 main.cpp가 있는 폴더에 복사한다. main.cpp와 externals는 유지한다.
+3. 안의 InitOpenGL.sln, InitOpenGL.vcxproj, vertex.glsl, fragment.glsl를 기존 main.cpp가 있는 폴더에 복사한다. main.cpp와 externals는 유지한다.
 4. Visual Studio에서 파일 → 열기 → 프로젝트/솔루션으로 방금 넣은 InitOpenGL.sln을 연다.
 5. 위 5번과 6번의 화면 확인·실행 절차를 따른다.
 
