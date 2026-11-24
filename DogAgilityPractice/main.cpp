@@ -13,10 +13,71 @@
 #include <sstream>
 #include <string>
 
+// 이 구역의 위치와 크기 및 색을 바꿔 장면을 조정한다.
+constexpr float floorHalfSize = 6.0f;
+constexpr float gridSpacing = 2.0f;
+constexpr float gridThickness = 0.05f;
+const glm::vec3 floorColor{0.65f, 0.78f, 0.86f};
+const glm::vec3 gridColor{0.95f, 0.97f, 1.0f};
+const glm::vec3 obstacleColor{0.15f, 0.4f, 0.9f};
+const glm::vec3 clearedColor{0.2f, 0.85f, 0.35f};
+const glm::vec3 dogColor{0.7f, 0.44f, 0.22f};
+const glm::vec3 eyeColor{0.04f, 0.04f, 0.04f};
+const glm::vec3 backgroundColor{0.64f, 0.79f, 0.9f};
+
+const glm::vec3 initialCameraPosition{0.8f, 8.2f, 13.5f};
+const glm::vec3 initialCameraTarget{0.0f, 0.4f, 0.0f};
+const glm::vec3 initialDogPosition{-3.0f, 0.0f, 2.5f};
+const glm::vec3 initialDogDirection{0.0f, 0.0f, -1.0f};
+const glm::vec3 initialTunnelPosition{1.0f, 0.0f, 0.0f};
+const glm::vec3 initialSeesawPosition{4.5f, 0.0f, 0.0f};
+const std::array<glm::vec3, 3> hurdlePositions{{
+    {-4.4f, 0.0f, 0.0f}, {-2.9f, 0.0f, 0.0f}, {-1.4f, 0.0f, 0.0f}
+}};
+constexpr std::array<float, 3> hurdleHeights{0.7f, 0.85f, 1.0f};
+
+constexpr float dogMoveSpeed = 2.8f;
+constexpr float gravity = 12.0f;
+constexpr float jumpSpeed = 7.0f;
+constexpr float hurdleHalfWidth = 0.9f;
+constexpr float hurdleThickness = 0.12f;
+constexpr float hurdlePostExtension = 0.3f;
+constexpr float tunnelHalfWidth = 1.0f;
+constexpr float tunnelHalfDepth = 1.05f;
+constexpr float tunnelHeight = 1.65f;
+constexpr float tunnelThickness = 0.16f;
+constexpr float tunnelScaleAmount = 0.12f;
+constexpr float tunnelScaleSpeed = 1.6f;
+constexpr float seesawHalfLength = 1.6f;
+constexpr float seesawHalfWidth = 0.55f;
+constexpr float seesawThickness = 0.12f;
+constexpr float initialSeesawAngle = 15.0f;
+
+const glm::vec3 dogBodyCenter{0.0f, 0.6f, 0.0f};
+const glm::vec3 dogBodySize{0.5f, 0.4f, 0.9f};
+const glm::vec3 dogHeadCenter{0.0f, 0.9f, 0.55f};
+const glm::vec3 dogHeadSize{0.4f, 0.4f, 0.4f};
+const glm::vec3 dogTailCenter{0.0f, 0.65f, -0.6f};
+const glm::vec3 dogTailSize{0.1f, 0.1f, 0.4f};
+const glm::vec3 dogEarCenter{0.16f, 1.15f, 0.55f};
+const glm::vec3 dogEarSize{0.12f, 0.2f, 0.16f};
+const glm::vec3 dogEyeCenter{0.11f, 0.94f, 0.76f};
+const glm::vec3 dogEyeSize{0.06f, 0.06f, 0.04f};
+const glm::vec3 dogLegJoint{0.19f, 0.4f, 0.3f};
+const glm::vec3 dogLegSize{0.13f, 0.4f, 0.14f};
+const float dogHalfWidth = std::max({dogBodySize.x * 0.5f, dogHeadSize.x * 0.5f,
+    dogEarCenter.x + dogEarSize.x * 0.5f, dogLegJoint.x + dogLegSize.x * 0.5f});
+const float dogHalfDepth = std::max({dogBodySize.z * 0.5f,
+    std::abs(dogTailCenter.z) + dogTailSize.z * 0.5f,
+    dogHeadCenter.z + dogHeadSize.z * 0.5f, dogEyeCenter.z + dogEyeSize.z * 0.5f});
+const float dogRadius = dogHalfWidth;
+const float dogHeight = std::max({dogBodyCenter.y + dogBodySize.y * 0.5f,
+    dogHeadCenter.y + dogHeadSize.y * 0.5f, dogEarCenter.y + dogEarSize.y * 0.5f});
+
 struct Camera
 {
-    glm::vec3 position{0.8f, 8.2f, 13.5f};
-    glm::vec3 target{0.0f, 0.4f, 0.0f};
+    glm::vec3 position = initialCameraPosition;
+    glm::vec3 target = initialCameraTarget;
     glm::vec3 up{0.0f, 1.0f, 0.0f};
     float fovDegrees = 45.0f;
     float nearPlane = 0.1f;
@@ -26,9 +87,9 @@ struct Camera
 
 struct Dog
 {
-    glm::vec3 position{-4.7f, 0.0f, 2.5f};
-    glm::vec3 direction{1.0f, 0.0f, 0.0f};
-    float heading = 90.0f;
+    glm::vec3 position = initialDogPosition;
+    glm::vec3 direction = initialDogDirection;
+    float heading = glm::degrees(std::atan2(initialDogDirection.x, initialDogDirection.z));
     float verticalSpeed = 0.0f;
     float walkPhase = 0.0f;
     bool running = false;
@@ -45,7 +106,7 @@ struct Hurdle
 
 struct Tunnel
 {
-    glm::vec3 position{-3.9f, 0.0f, 0.0f};
+    glm::vec3 position = initialTunnelPosition;
     float scale = 1.0f;
     float phase = 0.0f;
     int entrySide = 0;
@@ -54,8 +115,8 @@ struct Tunnel
 
 struct Seesaw
 {
-    glm::vec3 position{4.6f, 0.0f, 0.0f};
-    float angle = 15.0f;
+    glm::vec3 position = initialSeesawPosition;
+    float angle = initialSeesawAngle;
 };
 
 struct Vertex
@@ -78,23 +139,10 @@ Dog dog;
 Tunnel tunnel;
 Seesaw seesaw;
 std::array<Hurdle, 3> hurdles{{
-    {{-1.3f, 0.0f, 0.0f}, 0.7f},
-    {{ 0.7f, 0.0f, 0.0f}, 0.85f},
-    {{ 2.7f, 0.0f, 0.0f}, 1.0f}
+    {hurdlePositions[0], hurdleHeights[0]},
+    {hurdlePositions[1], hurdleHeights[1]},
+    {hurdlePositions[2], hurdleHeights[2]}
 }};
-
-constexpr float floorHalfSize = 6.0f;
-constexpr float dogRadius = 0.33f;
-constexpr float dogHeight = 1.04f;
-constexpr float dogMoveSpeed = 2.8f;
-constexpr float gravity = 12.0f;
-constexpr float jumpSpeed = 7.0f;
-constexpr float hurdleHalfWidth = 0.9f;
-constexpr float tunnelHalfWidth = 1.0f;
-constexpr float tunnelHalfDepth = 1.05f;
-constexpr float tunnelHeight = 1.65f;
-constexpr float seesawHalfLength = 1.6f;
-constexpr float seesawHalfWidth = 0.55f;
 
 constexpr GLfloat cubeVertices[][3] = {
 	// 앞면
@@ -292,20 +340,21 @@ void DrawPartScene(const glm::mat4& parent, const glm::vec3& center,
     DrawCubeScene(model, color);
 }
 
-// 두 색의 얇은 육면체를 번갈아 놓아 체크무늬 바닥을 그린다.
+// 밝은 바닥 위에 얇은 육면체로 격자선을 그린다.
 void DrawFloorScene()
 {
-    const int count = static_cast<int>(floorHalfSize * 2.0f);
     const glm::mat4 identity(1.0f);
-    for (int row = 0; row < count; ++row)
+    DrawPartScene(identity, {0.0f, -0.04f, 0.0f},
+        {floorHalfSize * 2.0f, 0.08f, floorHalfSize * 2.0f}, floorColor);
+
+    const int count = static_cast<int>(floorHalfSize * 2.0f / gridSpacing);
+    for (int i = 0; i <= count; ++i)
     {
-        for (int column = 0; column < count; ++column)
-        {
-            const glm::vec3 color = (row + column) % 2 == 0
-                ? glm::vec3(0.81f, 0.86f, 0.78f) : glm::vec3(0.46f, 0.63f, 0.51f);
-            DrawPartScene(identity, {column - floorHalfSize + 0.5f, -0.04f, row - floorHalfSize + 0.5f},
-                {1.0f, 0.08f, 1.0f}, color);
-        }
+        const float offset = -floorHalfSize + i * gridSpacing;
+        DrawPartScene(identity, {offset, 0.003f, 0.0f},
+            {gridThickness, 0.006f, floorHalfSize * 2.0f}, gridColor);
+        DrawPartScene(identity, {0.0f, 0.003f, offset},
+            {floorHalfSize * 2.0f, 0.006f, gridThickness}, gridColor);
     }
 }
 
@@ -316,16 +365,15 @@ void DrawHurdleScene()
     {
         glm::mat4 parent = glm::translate(glm::mat4(1.0f), hurdle.position);
         parent = glm::rotate(parent, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        const glm::vec3 color = hurdle.cleared
-            ? glm::vec3(0.2f, 0.85f, 0.35f) : glm::vec3(0.2f, 0.45f, 0.95f);
+        const glm::vec3 color = hurdle.cleared ? clearedColor : obstacleColor;
         for (float side : {-1.0f, 1.0f})
         {
-            DrawPartScene(parent, {side * hurdleHalfWidth, (hurdle.height + 0.3f) * 0.5f, 0.0f},
-                {0.12f, hurdle.height + 0.3f, 0.12f}, color);
+            DrawPartScene(parent, {side * hurdleHalfWidth, (hurdle.height + hurdlePostExtension) * 0.5f, 0.0f},
+                {hurdleThickness, hurdle.height + hurdlePostExtension, hurdleThickness}, color);
             DrawPartScene(parent, {side * hurdleHalfWidth, 0.04f, 0.0f},
                 {0.3f, 0.08f, 0.6f}, color);
         }
-        DrawPartScene(parent, {0.0f, hurdle.height, 0.0f}, {1.8f, 0.12f, 0.12f}, color);
+        DrawPartScene(parent, {0.0f, hurdle.height, 0.0f}, {hurdleHalfWidth * 2.0f, hurdleThickness, hurdleThickness}, color);
     }
 }
 
@@ -334,20 +382,19 @@ void DrawTunnelScene()
 {
     glm::mat4 parent = glm::translate(glm::mat4(1.0f), tunnel.position);
     parent = glm::scale(parent, glm::vec3(tunnel.scale));
-    const glm::vec3 color = tunnel.cleared
-        ? glm::vec3(0.25f, 0.85f, 0.4f) : glm::vec3(0.8f, 0.36f, 0.18f);
+    const glm::vec3 color = tunnel.cleared ? clearedColor : obstacleColor;
     for (float side : {-1.0f, 1.0f})
         DrawPartScene(parent, {side * tunnelHalfWidth, tunnelHeight * 0.5f, 0.0f},
-            {0.16f, tunnelHeight, tunnelHalfDepth * 2.0f}, color);
+            {tunnelThickness, tunnelHeight, tunnelHalfDepth * 2.0f}, color);
     DrawPartScene(parent, {0.0f, tunnelHeight, 0.0f},
-        {tunnelHalfWidth * 2.0f + 0.16f, 0.16f, tunnelHalfDepth * 2.0f}, color);
+        {tunnelHalfWidth * 2.0f + tunnelThickness, tunnelThickness, tunnelHalfDepth * 2.0f}, color);
 }
 
 // 아래쪽 끝이 바닥에 닿도록 시소의 회전 중심 높이를 계산한다.
 float GetSeesawCenterHeight()
 {
     const float radians = glm::radians(seesaw.angle);
-    return std::sin(std::abs(radians)) * seesawHalfLength + 0.06f * std::cos(radians);
+    return std::sin(std::abs(radians)) * seesawHalfLength + seesawThickness * 0.5f * std::cos(radians);
 }
 
 // 기울어진 시소 판과 중앙 받침대를 그린다.
@@ -355,39 +402,40 @@ void DrawSeesawScene()
 {
     const float height = GetSeesawCenterHeight();
     const glm::mat4 parent = glm::translate(glm::mat4(1.0f), seesaw.position);
-    DrawPartScene(parent, {0.0f, height * 0.5f, 0.0f}, {0.7f, height, 0.45f}, {0.32f, 0.38f, 0.44f});
+    DrawPartScene(parent, {0.0f, height * 0.5f, 0.0f}, {0.7f, height, 0.45f}, obstacleColor);
     glm::mat4 board = glm::translate(parent, {0.0f, height, 0.0f});
     board = glm::rotate(board, glm::radians(seesaw.angle), {1.0f, 0.0f, 0.0f});
-    DrawPartScene(board, {0.0f, 0.0f, 0.0f}, {seesawHalfWidth * 2.0f, 0.12f, seesawHalfLength * 2.0f},
-        {0.95f, 0.67f, 0.12f});
+    DrawPartScene(board, {0.0f, 0.0f, 0.0f}, {seesawHalfWidth * 2.0f, seesawThickness, seesawHalfLength * 2.0f},
+        obstacleColor);
 }
 
-// 이동 방향을 향하는 몸통과 머리 및 관절에서 흔들리는 네 다리를 그린다.
+// 큐브로 몸통과 머리와 꼬리 및 눈과 귀와 네 다리를 그린다.
 void DrawDogScene()
 {
     glm::mat4 parent = glm::translate(glm::mat4(1.0f), dog.position);
     parent = glm::rotate(parent, glm::radians(dog.heading), {0.0f, 1.0f, 0.0f});
-    const glm::vec3 coat(0.72f, 0.43f, 0.2f);
-    const glm::vec3 darkCoat(0.28f, 0.16f, 0.1f);
-    DrawPartScene(parent, {0.0f, 0.57f, 0.0f}, {0.48f, 0.4f, 0.85f}, coat);
-    DrawPartScene(parent, {0.0f, 0.79f, 0.46f}, {0.42f, 0.42f, 0.4f}, coat);
-    DrawPartScene(parent, {0.0f, 0.68f, 0.73f}, {0.3f, 0.18f, 0.25f}, darkCoat);
-    DrawPartScene(parent, {0.0f, 0.72f, 0.87f}, {0.12f, 0.1f, 0.06f}, glm::vec3(0.06f));
+    DrawPartScene(parent, dogBodyCenter, dogBodySize, dogColor);
+    DrawPartScene(parent, dogHeadCenter, dogHeadSize, dogColor);
+    DrawPartScene(parent, dogTailCenter, dogTailSize, dogColor);
+
     for (float side : {-1.0f, 1.0f})
     {
-        DrawPartScene(parent, {side * 0.23f, 0.96f, 0.42f}, {0.13f, 0.16f, 0.2f}, darkCoat);
-        DrawPartScene(parent, {side * 0.215f, 0.84f, 0.57f}, {0.035f, 0.06f, 0.06f}, glm::vec3(0.04f));
+        glm::vec3 ear = dogEarCenter;
+        glm::vec3 eye = dogEyeCenter;
+        ear.x *= side;
+        eye.x *= side;
+        DrawPartScene(parent, ear, dogEarSize, dogColor);
+        DrawPartScene(parent, eye, dogEyeSize, eyeColor);
+
         for (float front : {-1.0f, 1.0f})
         {
             const float swing = dog.walking && dog.grounded ? 27.0f * std::sin(dog.walkPhase) * side * front : 0.0f;
-            glm::mat4 leg = glm::translate(parent, {side * 0.19f, 0.43f, front * 0.29f});
+            glm::mat4 leg = glm::translate(parent,
+                {side * dogLegJoint.x, dogLegJoint.y, front * dogLegJoint.z});
             leg = glm::rotate(leg, glm::radians(swing), {1.0f, 0.0f, 0.0f});
-            DrawPartScene(leg, {0.0f, -0.215f, 0.0f}, {0.13f, 0.43f, 0.14f}, darkCoat);
+            DrawPartScene(leg, {0.0f, -dogLegSize.y * 0.5f, 0.0f}, dogLegSize, dogColor);
         }
     }
-    glm::mat4 tail = glm::translate(parent, {0.0f, 0.65f, -0.43f});
-    tail = glm::rotate(tail, glm::radians(-35.0f), {1.0f, 0.0f, 0.0f});
-    DrawPartScene(tail, {0.0f, 0.0f, -0.18f}, {0.1f, 0.1f, 0.4f}, coat);
 }
 
 // 강아지 발 아래에 있는 상자 윗면의 높이를 구한다.
@@ -407,23 +455,23 @@ float GetGroundHeight(const glm::vec3& position)
     float height = 0.0f;
     const glm::vec3 local = position - seesaw.position;
     const float radians = glm::radians(seesaw.angle);
-    const float boardZ = (local.z - 0.06f * std::sin(radians)) / std::cos(radians);
+    const float boardZ = (local.z - seesawThickness * 0.5f * std::sin(radians)) / std::cos(radians);
     if (std::abs(local.x) <= seesawHalfWidth && std::abs(boardZ) <= seesawHalfLength)
-        height = GetSeesawCenterHeight() - std::tan(radians) * local.z + 0.06f / std::cos(radians);
+        height = GetSeesawCenterHeight() - std::tan(radians) * local.z + seesawThickness * 0.5f / std::cos(radians);
 
     for (const Hurdle& hurdle : hurdles)
     {
         height = std::max(height, GetBoxSupportHeight(position,
-            hurdle.position + glm::vec3(0.0f, hurdle.height, 0.0f), {0.12f, 0.12f, 1.8f}));
+            hurdle.position + glm::vec3(0.0f, hurdle.height, 0.0f), {hurdleThickness, hurdleThickness, hurdleHalfWidth * 2.0f}));
         for (float side : {-1.0f, 1.0f})
             height = std::max(height, GetBoxSupportHeight(position,
-                hurdle.position + glm::vec3(0.0f, (hurdle.height + 0.3f) * 0.5f, side * hurdleHalfWidth),
-                {0.12f, hurdle.height + 0.3f, 0.12f}));
+                hurdle.position + glm::vec3(0.0f, (hurdle.height + hurdlePostExtension) * 0.5f, side * hurdleHalfWidth),
+                {hurdleThickness, hurdle.height + hurdlePostExtension, hurdleThickness}));
     }
 
     height = std::max(height, GetBoxSupportHeight(position,
         tunnel.position + glm::vec3(0.0f, tunnelHeight, 0.0f) * tunnel.scale,
-        glm::vec3(tunnelHalfWidth * 2.0f + 0.16f, 0.16f, tunnelHalfDepth * 2.0f) * tunnel.scale));
+        glm::vec3(tunnelHalfWidth * 2.0f + tunnelThickness, tunnelThickness, tunnelHalfDepth * 2.0f) * tunnel.scale));
     return height;
 }
 
@@ -431,8 +479,8 @@ float GetGroundHeight(const glm::vec3& position)
 bool IntersectsDog(const glm::vec3& position, const glm::vec3& center, const glm::vec3& size)
 {
     const float radians = glm::radians(dog.heading);
-    const float halfX = 0.28f * std::abs(std::cos(radians)) + 0.86f * std::abs(std::sin(radians));
-    const float halfZ = 0.28f * std::abs(std::sin(radians)) + 0.86f * std::abs(std::cos(radians));
+    const float halfX = dogHalfWidth * std::abs(std::cos(radians)) + dogHalfDepth * std::abs(std::sin(radians));
+    const float halfZ = dogHalfWidth * std::abs(std::sin(radians)) + dogHalfDepth * std::abs(std::cos(radians));
     return std::abs(position.x - center.x) < halfX + size.x * 0.5f
         && std::abs(position.z - center.z) < halfZ + size.z * 0.5f
         && position.y < center.y + size.y * 0.5f - 0.001f
@@ -445,12 +493,12 @@ bool IsBlocked(const glm::vec3& position)
     for (const Hurdle& hurdle : hurdles)
     {
         if (IntersectsDog(position, hurdle.position + glm::vec3(0.0f, hurdle.height, 0.0f),
-            {0.12f, 0.12f, 1.8f})) return true;
+            {hurdleThickness, hurdleThickness, hurdleHalfWidth * 2.0f})) return true;
         for (float side : {-1.0f, 1.0f})
         {
             if (IntersectsDog(position,
-                hurdle.position + glm::vec3(0.0f, (hurdle.height + 0.3f) * 0.5f, side * hurdleHalfWidth),
-                {0.12f, hurdle.height + 0.3f, 0.12f})) return true;
+                hurdle.position + glm::vec3(0.0f, (hurdle.height + hurdlePostExtension) * 0.5f, side * hurdleHalfWidth),
+                {hurdleThickness, hurdle.height + hurdlePostExtension, hurdleThickness})) return true;
         }
     }
 
@@ -459,10 +507,10 @@ bool IsBlocked(const glm::vec3& position)
     {
         if (IntersectsDog(position,
             tunnel.position + glm::vec3(side * tunnelHalfWidth, tunnelHeight * 0.5f, 0.0f) * scale,
-            glm::vec3(0.16f, tunnelHeight, tunnelHalfDepth * 2.0f) * scale)) return true;
+            glm::vec3(tunnelThickness, tunnelHeight, tunnelHalfDepth * 2.0f) * scale)) return true;
     }
     return IntersectsDog(position, tunnel.position + glm::vec3(0.0f, tunnelHeight, 0.0f) * scale,
-        glm::vec3(tunnelHalfWidth * 2.0f + 0.16f, 0.16f, tunnelHalfDepth * 2.0f) * scale);
+        glm::vec3(tunnelHalfWidth * 2.0f + tunnelThickness, tunnelThickness, tunnelHalfDepth * 2.0f) * scale);
 }
 
 // 이동 방향과 점프 높이 및 지면 접촉을 갱신한다.
@@ -556,16 +604,16 @@ void UpdateObstacles(const glm::vec3& previous)
         const float after = dog.position.x - hurdle.position.x;
         const bool crossed = (before < 0.0f && after >= 0.0f) || (before > 0.0f && after <= 0.0f);
         if (crossed && std::abs(dog.position.z - hurdle.position.z) < hurdleHalfWidth - dogRadius
-            && std::min(previous.y, dog.position.y) > hurdle.height + 0.06f)
+            && std::min(previous.y, dog.position.y) > hurdle.height + hurdleThickness * 0.5f)
             hurdle.cleared = true;
     }
 
     const glm::vec3 local = dog.position - tunnel.position;
     const glm::vec3 before = previous - tunnel.position;
     const float halfDepth = tunnelHalfDepth * tunnel.scale;
-    const float corridor = (tunnelHalfWidth - 0.08f) * tunnel.scale - dogRadius;
+    const float corridor = (tunnelHalfWidth - tunnelThickness * 0.5f) * tunnel.scale - dogRadius;
     const bool fits = std::abs(local.x) < corridor
-        && dog.position.y + dogHeight < (tunnelHeight - 0.08f) * tunnel.scale;
+        && dog.position.y + dogHeight < (tunnelHeight - tunnelThickness * 0.5f) * tunnel.scale;
     if (!fits)
     {
         tunnel.entrySide = 0;
@@ -577,12 +625,12 @@ void UpdateObstacles(const glm::vec3& previous)
     if (before.z <= -halfDepth && local.z > -halfDepth && local.z < halfDepth)
         tunnel.entrySide = -1;
 
-    if (tunnel.entrySide == 1 && local.z < -halfDepth - 0.86f)
+    if (tunnel.entrySide == 1 && local.z < -halfDepth - dogHalfDepth)
     {
         tunnel.cleared = true;
         tunnel.entrySide = 0;
     }
-    if (tunnel.entrySide == -1 && local.z > halfDepth + 0.86f)
+    if (tunnel.entrySide == -1 && local.z > halfDepth + dogHalfDepth)
     {
         tunnel.cleared = true;
         tunnel.entrySide = 0;
@@ -614,8 +662,8 @@ void UpdateCamera(float deltaTime)
 // 터널은 계속 움직이고 강아지는 시작 상태에서만 갱신한다.
 void Update(float deltaTime)
 {
-    tunnel.phase = std::fmod(tunnel.phase + 1.6f * deltaTime, glm::radians(360.0f));
-    tunnel.scale = 1.0f + 0.12f * std::sin(tunnel.phase);
+    tunnel.phase = std::fmod(tunnel.phase + tunnelScaleSpeed * deltaTime, glm::radians(360.0f));
+    tunnel.scale = 1.0f + tunnelScaleAmount * std::sin(tunnel.phase);
 
     const glm::vec3 previous = dog.position;
     UpdateDog(deltaTime, dog.direction);
@@ -651,7 +699,7 @@ void keyCallBack(GLFWwindow* currentWindow, int key, int, int action, int mods)
 // 카메라 행렬을 보내고 바닥과 장애물 및 강아지를 그린다.
 void DrawScene()
 {
-    glClearColor(0.64f, 0.79f, 0.9f, 1.0f);
+    glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(shaderProgram);
     const glm::mat4 view = glm::lookAt(camera.position, camera.target, camera.up);
