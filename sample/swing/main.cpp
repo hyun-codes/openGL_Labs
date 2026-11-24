@@ -1,43 +1,80 @@
-// 강아지 실습에 이식할 간단한 그네 모델과 동작 함수이다.
-// 이 파일의 함수 두 개를 DogAgilityPractice/main.cpp에 복사한다.
-// 기존 DrawPartScene과 큐브 VAO 및 셰이더를 그대로 사용한다.
+// 이 파일은 DogAgilityPractice/main.cpp에 복사할 그네 부품이다.
+// 이 파일 아래의 실제 함수는 DrawSwingScene과 UpdateSwing 두 개이다.
+// include와 실행용 main을 추가할 필요가 없다.
+// 설명에 적힌 코드를 실제 main.cpp로 옮길 때는 앞의 주석 표시를 제거한다.
 //
-// main 위의 전역변수 부분에 아래 네 줄을 추가한다.
-// glm::vec3 swingPosition(0.0f, 0.0f, 0.0f);
+// 붙여 넣을 위치
+// DogAgilityPractice/main.cpp에서 void Update(float deltaTime)의 함수 정의를 찾는다.
+// 그 바로 위에 아래 실제 함수 두 개를 붙인다.
+// 이 위치에서는 DrawPartScene과 필요한 OpenGL 초기화가 이미 준비되어 있다.
+//
+// 전역변수 추가
+// main 함수 위에서 Camera camera; 같은 전역변수가 있는 곳에 아래를 추가한다.
+// glm::vec3 swingPosition(0.0f, 0.0f, 3.0f);
 // float swingPhase = 0.0f;
 // float swingAngle = 0.0f;
 // bool swingMoving = false;
-// swingPosition의 X와 Z로 그네 배치를 바꾸며 Y는 바닥 높이이다.
+// swingPosition은 그네 전체 배치이며 X와 Z로 바닥 위 위치를 바꾼다.
 //
-// 이 파일의 함수 두 개는 기존 Update 함수 바로 위에 붙여 넣는다.
-// 기존 DrawPartScene 정의보다 아래에 두면 별도 함수 선언이 필요 없다.
+// 기존 강아지 모델 함수 삭제
+// void DrawDogScene()의 함수 정의를 여는 중괄호부터 짝이 맞는 닫는 중괄호까지 삭제한다.
+// 기존 DrawPartScene과 DrawCubeScene은 그네 부품을 그릴 때 사용하는 함수이다.
 //
-// 기존 DrawDogScene 함수 정의를 지우고 아래 DrawSwingScene을 사용한다.
-// DrawScene에서 DrawDogScene(); 줄을 아래 줄로 교체한다.
+// 그리기 호출 교체
+// void DrawScene() 안의 다음 한 줄을 찾는다.
+// DrawDogScene();
+// 그 줄을 아래로 교체한다.
 // DrawSwingScene(swingPosition, swingAngle);
-// 바닥만 필요하면 DrawScene의 DrawHurdleScene과 DrawTunnelScene 및 DrawSeesawScene 호출도 뺀다.
+// 카메라 행렬을 보내고 바닥과 장애물을 그리는 나머지 호출은 함께 사용할 수 있다.
 //
-// Update 함수를 아래 내용으로 교체한다.
+// 갱신 함수 교체
+// void Update(float deltaTime)의 기존 함수 정의 전체를 아래로 교체한다.
+// 이 교체로 강아지 이동과 강아지에 묶인 시소 및 통과 판정을 제거한다.
+// 터널의 반복 애니메이션과 카메라는 계속 갱신한다.
 // void Update(float deltaTime)
 // {
+//     tunnel.phase = std::fmod(tunnel.phase + tunnelScaleSpeed * deltaTime, glm::radians(360.0f));
+//     tunnel.scale = 1.0f + tunnelScaleAmount * std::sin(tunnel.phase);
 //     UpdateSwing(deltaTime, swingMoving, swingPhase, swingAngle);
 //     UpdateCamera(deltaTime);
 // }
-// 카메라 입력과 바닥 그리기는 기존 코드를 사용한다.
 //
-// keyCallBack에서 P를 검사하는 기존 if 블록을 아래 한 줄로 교체한다.
-// if (key == GLFW_KEY_P) swingMoving = !swingMoving;
-// P 대신 다른 키를 쓰려면 이 줄의 GLFW_KEY_P를 바꾼다.
-// 같은 함수의 Space 검사부터 WASD 검사와 dog.heading 대입까지는 삭제한다.
-// C와 R의 카메라 회전 및 0과 Q의 처리는 그대로 사용한다.
+// 키 콜백 교체
+// void keyCallBack(GLFWwindow* currentWindow, int key, int, int action, int mods)의
+// 기존 함수 정의 전체를 아래로 교체한다.
+// P는 그네 시작과 정지이며 C와 R은 카메라 회전이다.
+// X와 Y 및 Z 이동은 기존 UpdateCamera에서 처리한다.
+// 시작 키를 바꾸려면 아래 GLFW_KEY_P를 바꾼다.
+// void keyCallBack(GLFWwindow* currentWindow, int key, int, int action, int mods)
+// {
+//     if (action != GLFW_PRESS) return;
+//     if (key == GLFW_KEY_P) swingMoving = !swingMoving;
+//     const float rotationSpeed = (mods & GLFW_MOD_SHIFT) ? -cameraRotateSpeed : cameraRotateSpeed;
+//     if (key == GLFW_KEY_C)
+//     {
+//         camera.selfRotateSpeed = camera.selfRotateSpeed == rotationSpeed ? 0.0f : rotationSpeed;
+//     }
+//     if (key == GLFW_KEY_R)
+//     {
+//         camera.orbitSpeed = camera.orbitSpeed == rotationSpeed ? 0.0f : rotationSpeed;
+//     }
+//     if (key == GLFW_KEY_0 || key == GLFW_KEY_KP_0) ResetScene();
+//     if (key == GLFW_KEY_Q || key == GLFW_KEY_ESCAPE)
+//         glfwSetWindowShouldClose(currentWindow, GLFW_TRUE);
+// }
 //
-// ResetScene 안에 아래 세 줄을 추가한다.
+// 리셋 연결
+// void ResetScene()의 닫는 중괄호 바로 위에 아래 세 줄을 추가한다.
 // swingPhase = 0.0f;
 // swingAngle = 0.0f;
 // swingMoving = false;
+// 기존 숫자 0 입력이 ResetScene을 호출하므로 그네도 함께 초기화된다.
 //
-// 모델의 색과 길이는 DrawSwingScene 안의 값을 바꾼다.
-// 흔들리는 최대 각도와 속도는 UpdateSwing 안의 값을 바꾼다.
+// 값 수정 위치
+// 배치는 위에 추가한 swingPosition을 바꾼다.
+// 기둥 높이와 줄 길이 및 좌석 크기와 RGB는 DrawSwingScene에서 바꾼다.
+// 최대 왕복 각도와 속도는 UpdateSwing에서 바꾼다.
+//
 
 // 두 기둥과 가로대 및 줄 두 개와 좌석을 큐브로 조립한다.
 void DrawSwingScene(const glm::vec3& position, float angle)

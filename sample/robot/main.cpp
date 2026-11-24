@@ -1,41 +1,65 @@
-// 강아지 실습의 걷기와 점프를 재사용할 간단한 로봇 모델과 동작 함수이다.
-// 이 파일의 함수 두 개를 DogAgilityPractice/main.cpp에 복사한다.
-// 기존 DrawPartScene과 큐브 VAO 및 셰이더를 그대로 사용한다.
-// 기존 dog 구조체는 로봇의 위치와 방향 및 점프 상태를 저장하는 용도로 사용한다.
+// 이 파일은 DogAgilityPractice/main.cpp에 복사할 로봇 부품이다.
+// 이 파일 아래의 실제 함수는 DrawRobotScene과 UpdateRobot 두 개이다.
+// include와 실행용 main을 추가할 필요가 없다.
+// 설명에 적힌 코드를 실제 main.cpp로 옮길 때는 앞의 주석 표시를 제거한다.
 //
-// main 위의 전역변수 부분에 아래 한 줄을 추가한다.
+// 붙여 넣을 위치
+// DogAgilityPractice/main.cpp에서 void Update(float deltaTime)의 함수 정의를 찾는다.
+// 그 바로 위에 아래 실제 함수 두 개를 붙인다.
+// 기존 DrawPartScene과 UpdateDog가 정의된 뒤이므로 별도 함수 선언이 필요 없다.
+//
+// 전역변수 추가
+// main 함수 위에서 Camera camera; 같은 전역변수가 있는 곳에 아래를 추가한다.
 // float robotLimbAngle = 0.0f;
+// dog 구조체는 로봇의 위치와 방향 및 점프 상태를 저장하는 용도로 재사용한다.
+// 시작 배치는 initialDogPosition이며 처음 방향은 initialDogDirection이다.
 //
-// 상단의 initialDogPosition 값으로 로봇 시작 위치를 바꾼다.
-// initialDogDirection으로 처음 진행 방향을 바꾼다.
-// dogMoveSpeed와 jumpSpeed 및 gravity로 걷기와 점프를 조절한다.
-//
-// 상단의 dogHalfWidth 정의부터 dogHeight 정의 끝까지 아래 네 줄로 교체한다.
+// 충돌 크기 교체
+// 상단에서 const float dogHalfWidth = 로 시작하는 줄을 찾는다.
+// 그 줄부터 const float dogHeight = 의 계산이 끝나는 세미콜론까지 아래로 교체한다.
 // const float dogHalfWidth = 0.4f;
 // const float dogHalfDepth = 0.32f;
 // const float dogRadius = dogHalfWidth;
 // const float dogHeight = 1.25f;
-// 이 값은 아래 로봇의 크기에 맞춘 충돌 범위이며 모델을 크게 바꾸면 함께 조절한다.
+// 크기만 바꿔도 예전 강아지의 긴 충돌 범위가 남지 않도록 맞추는 작업이다.
+// 아래 DrawRobotScene의 모델 크기를 크게 바꾸면 이 폭과 깊이 및 높이도 맞춘다.
 //
-// 이 파일의 함수 두 개는 기존 Update 함수 바로 위에 붙여 넣는다.
-// DrawPartScene과 UpdateDog 정의보다 아래에 두면 별도 함수 선언이 필요 없다.
+// 기존 강아지 모델 함수 삭제
+// void DrawDogScene()의 함수 정의를 여는 중괄호부터 짝이 맞는 닫는 중괄호까지 삭제한다.
+// UpdateRobot은 기존 UpdateDog를 호출하므로 UpdateDog 함수가 필요하다.
+// StartJump와 IsBlocked 및 GetGroundHeight도 기존 점프와 충돌에 사용하는 함수이다.
 //
-// 기존 DrawDogScene 함수 정의를 지우고 아래 DrawRobotScene을 사용한다.
-// DrawScene에서 DrawDogScene(); 줄을 아래 줄로 교체한다.
+// 그리기 호출 교체
+// void DrawScene() 안의 다음 한 줄을 찾는다.
+// DrawDogScene();
+// 그 줄을 아래로 교체한다.
 // DrawRobotScene(dog.position, dog.heading, robotLimbAngle);
 //
-// Update에서 UpdateDog(deltaTime, dog.direction); 한 줄을 아래 줄로 교체한다.
+// 갱신 호출 교체
+// void Update(float deltaTime) 안의 다음 한 줄을 찾는다.
+// UpdateDog(deltaTime, dog.direction);
+// 그 줄을 아래로 교체한다.
 // UpdateRobot(deltaTime, robotLimbAngle);
-// previous 위치 저장과 UpdateObstacles 및 시소 판정과 UpdateCamera는 그대로 사용한다.
-// 로봇이 장애물을 넘을 때도 기존 충돌과 통과 판정이 함께 적용된다.
+// 이 줄 앞의 const glm::vec3 previous = dog.position;는 통과 판정에 필요하다.
+// 이 줄 뒤의 시소 각도 계산과 UpdateObstacles(previous) 및 UpdateCamera는 계속 사용한다.
+// 이 연결로 로봇도 허들을 넘고 터널을 통과하며 시소 위에서 이동한다.
 //
-// ResetScene 안에 robotLimbAngle = 0.0f; 한 줄을 추가한다.
-// 기존 P와 WASD 및 Space 입력은 그대로 로봇 걷기와 방향 변경 및 점프에 사용한다.
-// 입력 키는 기존 keyCallBack의 GLFW_KEY_P와 WASD 및 GLFW_KEY_SPACE를 바꾼다.
-// 카메라 입력도 기존 UpdateCamera와 keyCallBack을 그대로 사용한다.
+// 리셋 연결
+// void ResetScene()의 닫는 중괄호 바로 위에 아래 한 줄을 추가한다.
+// robotLimbAngle = 0.0f;
+// 기존 dog = Dog{};가 로봇의 위치와 이동 및 점프 상태를 초기화한다.
 //
-// 모델의 색과 부품 크기는 DrawRobotScene 안의 값을 바꾼다.
-// 팔과 다리의 최대 각도는 UpdateRobot 안의 maxAngle 값을 바꾼다.
+// 키 입력
+// 기존 keyCallBack에서 P는 시작과 정지이며 WASD는 진행 방향이고 Space는 점프이다.
+// P를 바꾸려면 GLFW_KEY_P를 바꾸고 점프 키는 GLFW_KEY_SPACE를 바꾼다.
+// 방향 키는 GLFW_KEY_W와 GLFW_KEY_S 및 GLFW_KEY_A와 GLFW_KEY_D를 바꾼다.
+// C와 R 회전 및 X와 Y와 Z 이동은 기존 카메라 코드에 연결되어 있다.
+//
+// 값 수정 위치
+// 걷기 속도는 dogMoveSpeed이며 점프는 jumpSpeed와 gravity로 조절한다.
+// 몸통과 머리 크기 및 RGB는 DrawRobotScene에서 바꾼다.
+// 다리와 팔 길이는 legLength와 armLength이며 최대 흔들림은 UpdateRobot의 maxAngle이다.
+//
 
 // 몸통과 머리 및 팔과 다리와 눈을 큐브로 조립한다.
 void DrawRobotScene(const glm::vec3& position, float heading, float limbAngle)
