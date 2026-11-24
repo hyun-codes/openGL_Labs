@@ -47,10 +47,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup><ClCompile Include="main.cpp" /></ItemGroup>
-  <ItemGroup><None Include="vertex.glsl" /><None Include="fragment.glsl" /></ItemGroup>
+  <ItemGroup><None Include="shaders\vertex.glsl" /><None Include="shaders\fragment.glsl" /></ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Target Name="CopyOpenGLRuntime" AfterTargets="Build">
     <Copy SourceFiles="$(ProjectDir)externals\glew\bin\Release\x64\glew32.dll;$(ProjectDir)externals\glfw\$(GlfwLibraryFolder)\glfw3.dll" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="$(ProjectDir)vertex.glsl;$(ProjectDir)fragment.glsl" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(ProjectDir)shaders\vertex.glsl;$(ProjectDir)shaders\fragment.glsl" DestinationFolder="$(OutDir)shaders" SkipUnchangedFiles="true" />
   </Target>
 </Project>

@@ -148,7 +148,7 @@ bool InitOpenGL()
 	glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
 	framebufferCallBack(window, framebufferWidth, framebufferHeight);
 	glEnable(GL_DEPTH_TEST);
-	shaderProgram = CreateShaderProgram("vertex.glsl", "fragment.glsl");
+	shaderProgram = CreateShaderProgram("shaders/vertex.glsl", "shaders/fragment.glsl");
 	if (!shaderProgram)
 	{
 		Cleanup();
