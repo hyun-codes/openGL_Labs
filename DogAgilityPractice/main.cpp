@@ -56,7 +56,7 @@ constexpr float tunnelScaleSpeed = 1.6f; // 터널이 커졌다 작아지는 반
 constexpr float seesawHalfLength = 1.6f; // 시소 판 앞뒤 길이의 절반
 constexpr float seesawHalfWidth = 0.55f; // 시소 판 좌우 폭의 절반
 constexpr float seesawThickness = 0.12f; // 시소 판 두께
-constexpr float initialSeesawAngle = 15.0f; // 시소 초기 기울기이며 도 단위
+constexpr float initialSeesawAngle = 15.0f; // 시소 초기 기울기와 동작 중 최대 각도이며 도 단위
 
 const glm::vec3 dogBodyCenter{0.0f, 0.6f, 0.0f}; // 몸통 중심이며 강아지 발 위치 기준
 const glm::vec3 dogBodySize{0.5f, 0.4f, 0.9f}; // 몸통의 가로와 높이 및 깊이
@@ -411,10 +411,10 @@ void DrawTunnelScene()
         {tunnelHalfWidth * 2.0f + tunnelThickness, tunnelThickness, tunnelHalfDepth * 2.0f}, color);
 }
 
-// 아래쪽 끝이 바닥에 닿도록 시소의 회전 중심 높이를 계산한다.
+// 초기 기울기로 중심 높이를 정해 회전 중에도 받침대 높이를 고정한다.
 float GetSeesawCenterHeight()
 {
-    const float radians = glm::radians(seesaw.angle);
+    const float radians = glm::radians(initialSeesawAngle);
     return std::sin(std::abs(radians)) * seesawHalfLength + seesawThickness * 0.5f * std::cos(radians);
 }
 
@@ -720,6 +720,21 @@ void Update(float deltaTime)
 
     const glm::vec3 previous = dog.position;
     UpdateDog(deltaTime, dog.direction);
+
+    // 시소 위에서 걷고 있을 때만 강아지 위치에 따라 판을 기울인다.
+    const glm::vec3 local = dog.position - seesaw.position;
+    const float angle = glm::radians(seesaw.angle);
+    const float boardZ = (local.z - seesawThickness * 0.5f * std::sin(angle)) / std::cos(angle);
+    if (dog.running && dog.grounded
+        && std::abs(local.x) <= seesawHalfWidth && std::abs(boardZ) <= seesawHalfLength
+        && std::abs(dog.position.y - GetGroundHeight(dog.position)) < 0.01f)
+    {
+        // 중앙이면 0도이며 앞뒤 위치에 비례해 최대 initialSeesawAngle만큼 기울인다.
+        seesaw.angle = std::clamp(local.z / seesawHalfLength, -1.0f, 1.0f) * std::abs(initialSeesawAngle);
+        // 판이 기울어진 뒤 강아지 발을 새 판 높이에 맞춘다.
+        dog.position.y = GetGroundHeight(dog.position);
+    }
+
     UpdateObstacles(previous);
     UpdateCamera(deltaTime);
 }
