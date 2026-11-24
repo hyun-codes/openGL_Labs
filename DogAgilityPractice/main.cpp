@@ -48,7 +48,9 @@ constexpr float hurdleHalfWidth = 0.9f; // 허들 기둥 사이 거리의 절반
 constexpr float hurdleThickness = 0.12f; // 허들 막대와 기둥의 두께
 constexpr float hurdlePostExtension = 0.3f; // 허들 막대 위로 더 올라오는 기둥 길이
 constexpr float tunnelHalfWidth = 1.0f; // 터널 양옆 벽 중심 간격의 절반
-constexpr float tunnelHalfDepth = 1.05f; // 터널 앞뒤 길이의 절반
+// 터널 전체 길이는 이 값의 두 배이며 길이 4를 원하면 2.0f로 바꾼다.
+// 그리기와 충돌 및 통과 판정에 함께 적용되며 애니메이션 배율이 추가로 곱해진다.
+constexpr float tunnelHalfDepth = 1.05f;
 constexpr float tunnelHeight = 1.65f; // 바닥에서 터널 지붕 중심까지 높이
 constexpr float tunnelThickness = 0.16f; // 터널 벽과 지붕 두께
 constexpr float tunnelScaleAmount = 0.12f; // 터널 크기 변화 폭이며 현재 원래 크기의 12퍼센트
