@@ -13,23 +13,6 @@
 #include <sstream>
 #include <string>
 
-// 이 구역의 GLFW 키 이름만 바꾸면 입력 키가 바뀐다.
-constexpr int keyDogStart = GLFW_KEY_P;
-constexpr int keyDogForward = GLFW_KEY_W;
-constexpr int keyDogBackward = GLFW_KEY_S;
-constexpr int keyDogLeft = GLFW_KEY_A;
-constexpr int keyDogRight = GLFW_KEY_D;
-constexpr int keyDogJump = GLFW_KEY_SPACE;
-constexpr int keyCameraRotate = GLFW_KEY_C;
-constexpr int keyCameraOrbit = GLFW_KEY_R;
-constexpr int keyCameraMoveX = GLFW_KEY_X;
-constexpr int keyCameraMoveY = GLFW_KEY_Y;
-constexpr int keyCameraMoveZ = GLFW_KEY_Z;
-constexpr int keyReset = GLFW_KEY_0;
-constexpr int keyResetNumpad = GLFW_KEY_KP_0;
-constexpr int keyQuit = GLFW_KEY_Q;
-constexpr int keyQuitAlternate = GLFW_KEY_ESCAPE;
-
 // 이 구역의 위치와 크기 및 색을 바꿔 장면을 조정한다.
 constexpr float floorHalfSize = 6.0f;
 constexpr float gridSpacing = 2.0f;
@@ -295,7 +278,8 @@ bool InitOpenGL()
 		return false;
 	}
 	std::cout << "OpenGL: " << glGetString(GL_VERSION) << '\n';
-	std::cout << "Controls are configured at the top of main.cpp. Shift reverses camera controls.\n";
+	std::cout << "P: start/pause | WASD: direction | SPACE: jump | 0: reset\n";
+	std::cout << "C/Shift+C: self rotation | R/Shift+R: orbit | X/Y/Z with Shift: camera movement\n";
 	return true;
 }
 
@@ -679,12 +663,15 @@ void UpdateCamera(float deltaTime)
         || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS;
     const float step = (shift ? -1.0f : 1.0f) * cameraMoveSpeed * deltaTime;
     glm::vec3 movement(0.0f);
-    if (glfwGetKey(window, keyCameraMoveX) == GLFW_PRESS) movement.x = step;
-    if (glfwGetKey(window, keyCameraMoveY) == GLFW_PRESS) movement.y = step;
+    // X는 양의 X축 이동이며 Shift를 누르면 반대로 이동한다.
+    if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) movement.x = step;
+    // Y는 양의 Y축 이동이며 Shift를 누르면 반대로 이동한다.
+    if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS) movement.y = step;
     camera.position += movement;
     camera.target += movement;
 
-    if (glfwGetKey(window, keyCameraMoveZ) == GLFW_PRESS)
+    // Z는 음의 Z축 이동이며 Shift를 누르면 반대로 이동한다.
+    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
     {
         glm::vec3 next = camera.position;
         next.z -= step;
@@ -709,25 +696,35 @@ void Update(float deltaTime)
 void keyCallBack(GLFWwindow* currentWindow, int key, int, int action, int mods)
 {
     if (action != GLFW_PRESS) return;
-    if (key == keyDogStart)
+    // P로 강아지의 걷기를 시작하거나 멈춘다.
+    if (key == GLFW_KEY_P)
     {
         dog.running = !dog.running;
         dog.walking = false;
     }
-    if (key == keyDogJump) StartJump();
-    if (key == keyDogForward) dog.direction = {0.0f, 0.0f, -1.0f};
-    if (key == keyDogBackward) dog.direction = {0.0f, 0.0f, 1.0f};
-    if (key == keyDogLeft) dog.direction = {-1.0f, 0.0f, 0.0f};
-    if (key == keyDogRight) dog.direction = {1.0f, 0.0f, 0.0f};
+    // Space로 강아지를 점프시킨다.
+    if (key == GLFW_KEY_SPACE) StartJump();
+    // WASD로 강아지의 진행 방향을 바꾼다.
+    if (key == GLFW_KEY_W) dog.direction = {0.0f, 0.0f, -1.0f};
+    if (key == GLFW_KEY_S) dog.direction = {0.0f, 0.0f, 1.0f};
+    if (key == GLFW_KEY_A) dog.direction = {-1.0f, 0.0f, 0.0f};
+    if (key == GLFW_KEY_D) dog.direction = {1.0f, 0.0f, 0.0f};
     dog.heading = glm::degrees(std::atan2(dog.direction.x, dog.direction.z));
-    if (key == keyCameraRotate || key == keyCameraOrbit)
+    const float rotationSpeed = (mods & GLFW_MOD_SHIFT) ? -cameraRotateSpeed : cameraRotateSpeed;
+    // C로 제자리 회전을 시작하거나 멈추며 Shift로 방향을 반대로 한다.
+    if (key == GLFW_KEY_C)
     {
-        const float speed = (mods & GLFW_MOD_SHIFT) ? -cameraRotateSpeed : cameraRotateSpeed;
-        float& currentSpeed = key == keyCameraRotate ? camera.selfRotateSpeed : camera.orbitSpeed;
-        currentSpeed = currentSpeed == speed ? 0.0f : speed;
+        camera.selfRotateSpeed = camera.selfRotateSpeed == rotationSpeed ? 0.0f : rotationSpeed;
     }
-    if (key == keyReset || key == keyResetNumpad) ResetScene();
-    if (key == keyQuit || key == keyQuitAlternate)
+    // R로 공전을 시작하거나 멈추며 Shift로 방향을 반대로 한다.
+    if (key == GLFW_KEY_R)
+    {
+        camera.orbitSpeed = camera.orbitSpeed == rotationSpeed ? 0.0f : rotationSpeed;
+    }
+    // 숫자 0으로 장면과 카메라를 초기화한다.
+    if (key == GLFW_KEY_0 || key == GLFW_KEY_KP_0) ResetScene();
+    // Q 또는 Escape로 종료한다.
+    if (key == GLFW_KEY_Q || key == GLFW_KEY_ESCAPE)
         glfwSetWindowShouldClose(currentWindow, GLFW_TRUE);
 }
 
