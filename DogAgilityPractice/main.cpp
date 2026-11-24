@@ -13,6 +13,23 @@
 #include <sstream>
 #include <string>
 
+// 이 구역의 GLFW 키 이름만 바꾸면 입력 키가 바뀐다.
+constexpr int keyDogStart = GLFW_KEY_P;
+constexpr int keyDogForward = GLFW_KEY_W;
+constexpr int keyDogBackward = GLFW_KEY_S;
+constexpr int keyDogLeft = GLFW_KEY_A;
+constexpr int keyDogRight = GLFW_KEY_D;
+constexpr int keyDogJump = GLFW_KEY_SPACE;
+constexpr int keyCameraRotate = GLFW_KEY_C;
+constexpr int keyCameraOrbit = GLFW_KEY_R;
+constexpr int keyCameraMoveX = GLFW_KEY_X;
+constexpr int keyCameraMoveY = GLFW_KEY_Y;
+constexpr int keyCameraMoveZ = GLFW_KEY_Z;
+constexpr int keyReset = GLFW_KEY_0;
+constexpr int keyResetNumpad = GLFW_KEY_KP_0;
+constexpr int keyQuit = GLFW_KEY_Q;
+constexpr int keyQuitAlternate = GLFW_KEY_ESCAPE;
+
 // 이 구역의 위치와 크기 및 색을 바꿔 장면을 조정한다.
 constexpr float floorHalfSize = 6.0f;
 constexpr float gridSpacing = 2.0f;
@@ -37,6 +54,8 @@ const std::array<glm::vec3, 3> hurdlePositions{{
 constexpr std::array<float, 3> hurdleHeights{0.7f, 0.85f, 1.0f};
 
 constexpr float dogMoveSpeed = 2.8f;
+constexpr float cameraMoveSpeed = 4.0f;
+constexpr float cameraRotateSpeed = 35.0f;
 constexpr float gravity = 12.0f;
 constexpr float jumpSpeed = 7.0f;
 constexpr float hurdleHalfWidth = 0.9f;
@@ -83,6 +102,7 @@ struct Camera
     float nearPlane = 0.1f;
     float farPlane = 100.0f;
     float orbitSpeed = 0.0f;
+    float selfRotateSpeed = 0.0f;
 };
 
 struct Dog
@@ -275,7 +295,7 @@ bool InitOpenGL()
 		return false;
 	}
 	std::cout << "OpenGL: " << glGetString(GL_VERSION) << '\n';
-	std::cout << "P: start/pause | WASD: move | SPACE: jump | R: orbit | Z/Shift+Z: camera Z | 0: reset\n";
+	std::cout << "Controls are configured at the top of main.cpp. Shift reverses camera controls.\n";
 	return true;
 }
 
@@ -637,9 +657,16 @@ void UpdateObstacles(const glm::vec3& previous)
     }
 }
 
-// 카메라 공전과 월드 Z축 이동을 갱신한다.
+// 카메라의 제자리 회전과 공전 및 월드 축 이동을 갱신한다.
 void UpdateCamera(float deltaTime)
 {
+    if (camera.selfRotateSpeed != 0.0f)
+    {
+        const glm::mat4 rotation = glm::rotate(glm::mat4(1.0f),
+            glm::radians(camera.selfRotateSpeed * deltaTime), camera.up);
+        camera.target = camera.position + glm::vec3(rotation * glm::vec4(camera.target - camera.position, 0.0f));
+    }
+
     if (camera.orbitSpeed != 0.0f)
     {
         const glm::mat4 rotation = glm::rotate(glm::mat4(1.0f),
@@ -648,12 +675,19 @@ void UpdateCamera(float deltaTime)
         camera.target = glm::vec3(rotation * glm::vec4(camera.target, 1.0f));
     }
 
-    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+    const bool shift = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS
+        || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS;
+    const float step = (shift ? -1.0f : 1.0f) * cameraMoveSpeed * deltaTime;
+    glm::vec3 movement(0.0f);
+    if (glfwGetKey(window, keyCameraMoveX) == GLFW_PRESS) movement.x = step;
+    if (glfwGetKey(window, keyCameraMoveY) == GLFW_PRESS) movement.y = step;
+    camera.position += movement;
+    camera.target += movement;
+
+    if (glfwGetKey(window, keyCameraMoveZ) == GLFW_PRESS)
     {
-        const bool shift = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS
-            || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS;
         glm::vec3 next = camera.position;
-        next.z += (shift ? 1.0f : -1.0f) * 4.0f * deltaTime;
+        next.z -= step;
         const float distance = glm::length(next - camera.target);
         if (distance > 2.0f && distance < 28.0f) camera.position = next;
     }
@@ -671,28 +705,29 @@ void Update(float deltaTime)
     UpdateCamera(deltaTime);
 }
 
-// 시작과 정지 및 점프와 카메라 공전과 리셋을 처리한다.
+// 강아지 조작과 카메라 회전 및 리셋 입력을 처리한다.
 void keyCallBack(GLFWwindow* currentWindow, int key, int, int action, int mods)
 {
     if (action != GLFW_PRESS) return;
-    if (key == GLFW_KEY_P)
+    if (key == keyDogStart)
     {
         dog.running = !dog.running;
         dog.walking = false;
     }
-    if (key == GLFW_KEY_SPACE) StartJump();
-    if (key == GLFW_KEY_W) dog.direction = {0.0f, 0.0f, -1.0f};
-    if (key == GLFW_KEY_S) dog.direction = {0.0f, 0.0f, 1.0f};
-    if (key == GLFW_KEY_A) dog.direction = {-1.0f, 0.0f, 0.0f};
-    if (key == GLFW_KEY_D) dog.direction = {1.0f, 0.0f, 0.0f};
+    if (key == keyDogJump) StartJump();
+    if (key == keyDogForward) dog.direction = {0.0f, 0.0f, -1.0f};
+    if (key == keyDogBackward) dog.direction = {0.0f, 0.0f, 1.0f};
+    if (key == keyDogLeft) dog.direction = {-1.0f, 0.0f, 0.0f};
+    if (key == keyDogRight) dog.direction = {1.0f, 0.0f, 0.0f};
     dog.heading = glm::degrees(std::atan2(dog.direction.x, dog.direction.z));
-    if (key == GLFW_KEY_R)
+    if (key == keyCameraRotate || key == keyCameraOrbit)
     {
-        const float speed = (mods & GLFW_MOD_SHIFT) ? -35.0f : 35.0f;
-        camera.orbitSpeed = camera.orbitSpeed == speed ? 0.0f : speed;
+        const float speed = (mods & GLFW_MOD_SHIFT) ? -cameraRotateSpeed : cameraRotateSpeed;
+        float& currentSpeed = key == keyCameraRotate ? camera.selfRotateSpeed : camera.orbitSpeed;
+        currentSpeed = currentSpeed == speed ? 0.0f : speed;
     }
-    if (key == GLFW_KEY_0 || key == GLFW_KEY_KP_0) ResetScene();
-    if (key == GLFW_KEY_Q || key == GLFW_KEY_ESCAPE)
+    if (key == keyReset || key == keyResetNumpad) ResetScene();
+    if (key == keyQuit || key == keyQuitAlternate)
         glfwSetWindowShouldClose(currentWindow, GLFW_TRUE);
 }
 
